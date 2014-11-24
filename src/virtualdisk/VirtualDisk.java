@@ -7,6 +7,7 @@ import java.io.RandomAccessFile;
 import common.Constants;
 import common.Constants.DiskOperationType;
 import dblockcache.AbstractDBuffer;
+import dblockcache.DBuffer;
 
 public class VirtualDisk  extends AbstractVirtualDisk{
 
@@ -16,13 +17,13 @@ public class VirtualDisk  extends AbstractVirtualDisk{
 		super(volName, format);
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public VirtualDisk(boolean format)
 			throws FileNotFoundException, IOException {
 		super(format);
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public VirtualDisk()
 			throws FileNotFoundException, IOException {
 		super();
@@ -30,10 +31,68 @@ public class VirtualDisk  extends AbstractVirtualDisk{
 	}
 
 	@Override
-	public void startRequest(AbstractDBuffer buf, DiskOperationType operation)
+	public void startRequest(DBuffer buf, DiskOperationType operation)
 			throws IllegalArgumentException, IOException {
 		// TODO Auto-generated method stub
+		synchronized(_queue){
+			while(!_queue.offer(new Request(buf, operation)));
+			_queue.notifyAll();
+		}
 
 	}
+
+	@Override
+	public void completeOldestRequest() throws IllegalArgumentException,
+	IOException {
+		// TODO Auto-generated method stub
+		synchronized(_queue){
+			while(_queue.isEmpty()){
+				try {
+					_queue.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			Request req = _queue.poll();
+			if(req == null)
+				return;
+			try {
+				if (req._operation == DiskOperationType.READ) {
+					readBlock(req._buffer);
+				} else {
+					writeBlock(req._buffer);
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				req._buffer.ioComplete();
+			}
+		}
+	}
+
+	public void done(){
+		_done = true;
+	}
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		while(!_done){
+			try {
+				completeOldestRequest();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+
 
 }
