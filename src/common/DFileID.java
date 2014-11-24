@@ -1,5 +1,4 @@
 package common;
-
 /* typedef DFileID to int */
 public class DFileID {
 
@@ -11,6 +10,10 @@ public class DFileID {
 
 	public int getDFileID() {
 		return _dFID;
+	}
+	
+	public void updateDFID(int dFID){
+		_dFID = dFID;
 	}
 	    
 	public boolean equals(Object other){
