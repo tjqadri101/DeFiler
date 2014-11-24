@@ -18,10 +18,10 @@ public class Inode {
 		
 	}
 	private void init(){
-		_mapped = false;
 		_blockMap = new int[Constants.BLOCK_MAP_SIZE];
 		_iter = 0;
 		_fileSize = 0;
+		_mapped = false;
 	}
 	public void freeInode(){
 		init();
