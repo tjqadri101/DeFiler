@@ -15,8 +15,8 @@ public class DBuffer extends AbstractDBuffer{
 	private int blockId;
 	private byte[] dbuf = new byte[Constants.BLOCK_SIZE];
 	private VirtualDisk disk;
-	public DBuffer(){
-		
+	public DBuffer(int bId){
+		blockId = bId;
 	}
 	/* Start an asynchronous fetch of associated block from the volume */
 	@Override
@@ -48,7 +48,6 @@ public class DBuffer extends AbstractDBuffer{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		dirty=false;
 	}
 
 	@Override
@@ -104,9 +103,10 @@ public class DBuffer extends AbstractDBuffer{
 	 * return -1, otherwise return number of bytes read.
 	 */
 	@Override
-	public int read(byte[] buffer, int startOffset, int count) {
+	public synchronized int read(byte[] buffer, int startOffset, int count) {
 		// TODO Auto-generated method stub
-		if(!valid) return -1;
+		//some errors
+		waitValid();
 		for(int i=0;i<count;i++){
 			buffer[startOffset+i] = dbuf[i];
 		}
@@ -119,8 +119,9 @@ public class DBuffer extends AbstractDBuffer{
 	 * written.
 	 */
 	@Override
-	public int write(byte[] buffer, int startOffset, int count) {
+	public synchronized int write(byte[] buffer, int startOffset, int count) {
 		// TODO Auto-generated method stub
+		//some errors
 		for(int i=0;i<count;i++){
 			dbuf[i] = buffer[startOffset+i];
 		}
@@ -129,10 +130,12 @@ public class DBuffer extends AbstractDBuffer{
 	}
 
 	@Override
-	public void ioComplete() {
+	public synchronized void ioComplete() {
 		// TODO Auto-generated method stub
 		pinned=false;
-		
+		valid=true;
+		dirty=false;
+		notifyAll();
 	}
 	/* An upcall from VirtualDisk layer to fetch the blockID associated with a startRequest operation */
 	@Override
