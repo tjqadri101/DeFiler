@@ -7,14 +7,13 @@ public class Inode {
 	/**
 	 * @param args
 	 */
-	private DFileID _dFID;
+	private int _dFID;
 	private int[] _blockMap;
 	private int _iter;
 	boolean _mapped;
 	private int _fileSize;
 	
-	public Inode(int dFID) {
-		_dFID = new DFileID(dFID);
+	public Inode() {
 		_mapped = false;
 		_blockMap = new int[Constants.BLOCK_MAP_SIZE];
 		_iter = 0;
@@ -32,6 +31,10 @@ public class Inode {
 		return false;
 	}
 	
+	public int[] getBlockMap(){
+		return _blockMap;
+	}
+	
 	public synchronized boolean utitlizeInode(){
 		if(!_mapped){
 			_mapped = true;
@@ -40,9 +43,11 @@ public class Inode {
 		return false;
 		
 	}
-	
+	public void updateDFID(int dfid){
+		_dFID = dfid;
+	}
 	public int getDFID(){
-		return _dFID.getDFileID();
+		return _dFID;
 	}
 	
 	public int getBlockID(int index){

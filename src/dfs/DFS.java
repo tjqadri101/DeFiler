@@ -93,7 +93,7 @@ public class DFS extends AbstractDFS{
 		
 		//initiate Inodes
 		for (int i=0;i<Constants.MAX_DFILES;i++){
-			Inode inode = new Inode(i);
+			Inode inode = new Inode();
 			myInodes.add(inode);
 		}
 		
@@ -142,7 +142,7 @@ public class DFS extends AbstractDFS{
 		
 		DBuffer dbuf = myDevilCache.getBlock(blockid);
 		myDevilCache.releaseBlock(dbuf);
-		inode.updateBlockMap(blockid);
+		inode.updateBlockMap(blockid, Constants.BLOCK_SIZE);
 		inode.updateDFID(dfid.getDFileID());
 		dfiles.add(dfid);
 		inodes.add(inode);
@@ -165,19 +165,23 @@ public class DFS extends AbstractDFS{
 		
 		if (!dfiles.contains(dFID)){
 			System.out.println("\n Requested file not found");
-			return 0;
+			return -1;
 		}
 		
 		Inode i = getMyInode(dFID);
 		if(i==null){
 			System.out.println("\n Inode not found for requested ");
-			return 0;
+			return -1;
 		}
 		
-		ArrayList<Integer> blocks = i.getBlockMap();
 		
 		for (int j=0; j<=count/Constants.BLOCK_SIZE; j++){
-			DBuffer dbuf = myDevilCache.getBlock(blocks.get(j));
+			int bId = i.getBlockID(j);
+			if (bId ==-1){
+				System.out.println("\n Block not found in block map");
+				return -1;
+			}
+			DBuffer dbuf = myDevilCache.getBlock(bId);
 			int cap;
 			if(j==count/Constants.BLOCK_SIZE){
 				cap = count - Constants.BLOCK_SIZE*j;
@@ -207,15 +211,16 @@ public class DFS extends AbstractDFS{
 			System.out.println("\n Inode not found for requested ");
 			return 0;
 		}
-		
-		ArrayList<Integer> blocks = i.getBlockMap();
+	
 		
 		for (int j=0; j<=count/Constants.BLOCK_SIZE; j++){
-			DBuffer dbuf = myDevilCache.getBlock(blocks.get(j));
-			if (dbuf==null){
-				int newBlock = myBlockIDs.poll();
-				i.updateBlockMap(newBlock);
+			int bId = i.getBlockID(j);
+			if (bId ==-1){
+				System.out.println("\n Block not found in block map");
+				return -1;
 			}
+			DBuffer dbuf = myDevilCache.getBlock(bId);
+			
 			int cap;
 			if(j==count/Constants.BLOCK_SIZE){
 				cap = count - Constants.BLOCK_SIZE*j;
@@ -223,6 +228,12 @@ public class DFS extends AbstractDFS{
 			else{
 				cap = Constants.BLOCK_SIZE;
 			}
+			
+			if (dbuf==null){
+				int newBlock = myBlockIDs.poll();
+				i.updateBlockMap(newBlock, cap);
+			}
+			
 			dbuf.write(buffer, startOffset+Constants.BLOCK_SIZE*j, cap);
 			myDevilCache.releaseBlock(dbuf);
 		}
@@ -237,7 +248,9 @@ public class DFS extends AbstractDFS{
 	@Override
 	public int sizeDFile(DFileID dFID) {
 		// TODO Auto-generated method stub
-		return 0;
+		
+		Inode i = getMyInode(dFID);
+		return i.getFileSize();
 	}
 
 	@Override
