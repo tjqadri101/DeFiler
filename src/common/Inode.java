@@ -10,7 +10,7 @@ public class Inode {
 	private int _dFID;
 	private int[] _blockMap;
 	private int _iter;
-	boolean _mapped;
+	int _mappedBool;
 	private int _fileSize;
 	
 	public Inode() {
@@ -21,7 +21,7 @@ public class Inode {
 		_blockMap = new int[Constants.BLOCK_MAP_SIZE];
 		_iter = 0;
 		_fileSize = 0;
-		_mapped = false;
+		_mappedBool = 0;
 	}
 	public void freeInode(){
 		init();
@@ -40,8 +40,8 @@ public class Inode {
 	}
 	
 	public synchronized boolean utitlizeInode(){
-		if(!_mapped){
-			_mapped = true;
+		if(_mappedBool == 0){
+			_mappedBool = 1;
 			return true;
 		}
 		return false;
