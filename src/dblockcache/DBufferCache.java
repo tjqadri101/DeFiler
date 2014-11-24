@@ -8,7 +8,7 @@ public class DBufferCache extends AbstractDBufferCache{
 	}
 
 	@Override
-	public AbstractDBuffer getBlock(int blockID) {
+	public DBuffer getBlock(int blockID) {
 		// TODO Auto-generated method stub
 		return null;
 	}
