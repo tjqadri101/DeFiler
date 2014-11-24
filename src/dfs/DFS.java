@@ -77,11 +77,12 @@ public class DFS extends AbstractDFS{
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		System.out.println("\now in init function");
+		System.out.println("\n now in init function");
 		
 		myDevilCache = new DBufferCache(Constants.NUM_OF_CACHE_BLOCKS);
 		myInodes = new LinkedList<Inode>();
 		myDFileIDs = new LinkedList<DFileID>();
+		myBlockIDs = new LinkedList<Integer>();
 		dfiles = new ArrayList<DFileID>();
 		inodes = new ArrayList<Inode>();
 		
@@ -143,7 +144,7 @@ public class DFS extends AbstractDFS{
 		DBuffer dbuf = myDevilCache.getBlock(blockid);
 		myDevilCache.releaseBlock(dbuf);
 		inode.updateBlockMap(blockid, Constants.BLOCK_SIZE);
-		inode.updateDFID(dfid.getDFileID());
+		inode.updateDFID(dfid.getDFileID(), blockid);
 		dfiles.add(dfid);
 		inodes.add(inode);
 		
@@ -217,7 +218,6 @@ public class DFS extends AbstractDFS{
 			int bId = i.getBlockID(j);
 			if (bId ==-1){
 				System.out.println("\n Block not found in block map");
-				return -1;
 			}
 			DBuffer dbuf = myDevilCache.getBlock(bId);
 			
@@ -231,7 +231,10 @@ public class DFS extends AbstractDFS{
 			
 			if (dbuf==null){
 				int newBlock = myBlockIDs.poll();
-				i.updateBlockMap(newBlock, cap);
+				if(!i.updateBlockMap(newBlock, cap)){
+					System.out.println("\n File exceeds maximum bound");
+				}
+				dbuf = myDevilCache.getBlock(newBlock);
 			}
 			
 			dbuf.write(buffer, startOffset+Constants.BLOCK_SIZE*j, cap);
@@ -265,8 +268,9 @@ public class DFS extends AbstractDFS{
 		// TODO Auto-generated method stub
 		
 	}
-	
+	/*
 	public static void main(String args[]){
 		DFS d = new DFS(true);
 	}
+	*/
 }

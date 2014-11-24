@@ -14,18 +14,17 @@ public class Inode {
 	private int _fileSize;
 	
 	public Inode() {
-		_mapped = false;
-		_blockMap = new int[Constants.BLOCK_MAP_SIZE];
-		_iter = 0;
-		_fileSize = Constants.BLOCK_SIZE;
+		init();
 		
 	}
-	
-	public void freeInode(){
+	private void init(){
 		_mapped = false;
 		_blockMap = new int[Constants.BLOCK_MAP_SIZE];
 		_iter = 0;
 		_fileSize = Constants.BLOCK_SIZE;
+	}
+	public void freeInode(){
+		init();
 	}
 	public boolean updateBlockMap(int blockID, int numBytes){
 		if(_iter < _blockMap.length){
@@ -49,8 +48,9 @@ public class Inode {
 		return false;
 		
 	}
-	public void updateDFID(int dfid){
+	public void updateDFID(int dfid, int blockID){
 		_dFID = dfid;
+		updateBlockMap(blockID, 0);
 	}
 	public int getDFID(){
 		return _dFID;
