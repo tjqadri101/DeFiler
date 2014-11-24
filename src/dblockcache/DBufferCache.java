@@ -7,12 +7,14 @@ public class DBufferCache extends AbstractDBufferCache{
 	 * Constructor: allocates a cacheSize number of cache blocks, each
 	 * containing BLOCK-size bytes data, in memory
 	 */
-	Queue<DBuffer> buffersInCache;
-	int numBlocksInCache;
+	private Queue<DBuffer> buffersInCache;
+	//private Map<Integer,DBuffer> cacheBlocks;
+	int maxBlocksInCache;
 	public DBufferCache(int cacheSize) {
 		super(cacheSize);
 		// TODO Auto-generated constructor stub
 		buffersInCache=new LinkedList<DBuffer>();
+		//cacheBlocks = new Hashtable<Integer,DBuffer>();
 	}
 	/*
 	 * Get buffer for block specified by blockID. The buffer is "held" until the
@@ -23,6 +25,15 @@ public class DBufferCache extends AbstractDBufferCache{
 	public DBuffer getBlock(int blockID) {
 		// TODO Auto-generated method stub
 		int length=0;
+		if (blockID<0) return null;
+		/*if(cacheBlocks.containsKey(blockID)){
+			
+			return cacheBlocks.get(blockID);
+		}
+		if(cacheBlocks.size()==maxBlocksInCache){
+			evict();
+		}*/
+		
 		for(DBuffer b: buffersInCache){
 			length++;
 			if (b.getBlockID()==blockID){
@@ -33,13 +44,17 @@ public class DBufferCache extends AbstractDBufferCache{
 				return b;
 			}
 		}
-		if (length==numBlocksInCache) evict();
-		DBuffer newBuffer = new DBuffer();
+		if (length==maxBlocksInCache) evict();
+		DBuffer newBuffer = new DBuffer(blockID);
+		newBuffer.startFetch();
 		return newBuffer;
 	}
 	public void evict(){
 		for(DBuffer b:buffersInCache){
-			if (!b.isBusy()) buffersInCache.remove(b);
+			if (!b.isBusy()){
+				buffersInCache.remove(b);
+				b.startPush();
+			}
 		}
 	}
 	/* Release the buffer so that others waiting on it can use it */
@@ -56,7 +71,10 @@ public class DBufferCache extends AbstractDBufferCache{
 	public void sync() {
 		// TODO Auto-generated method stub
 		for(DBuffer b:buffersInCache){
-			if(!b.checkClean()) b.startPush();
+			if(!b.checkClean()){
+				b.startPush();
+				b.waitClean();
+			}
 		}
 		//now it should wait to complete
 	}
