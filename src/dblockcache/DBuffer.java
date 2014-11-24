@@ -1,7 +1,10 @@
 package dblockcache;
 
+import java.io.IOException;
+
 import common.Constants.DiskOperationType;
 import common.Constants;
+import virtualdisk.VirtualDisk;
 
 public class DBuffer extends AbstractDBuffer{
 
@@ -11,6 +14,7 @@ public class DBuffer extends AbstractDBuffer{
 	private boolean pinned;
 	private int blockId;
 	private byte[] dbuf = new byte[Constants.BLOCK_SIZE];
+	private VirtualDisk disk;
 	public DBuffer(){
 		
 	}
@@ -20,14 +24,30 @@ public class DBuffer extends AbstractDBuffer{
 		// TODO Auto-generated method stub
 		pinned=true;
 		valid=false;
-		startRequest(this,DiskOperationType.READ);
+		try {
+			disk.startRequest(this,DiskOperationType.READ);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	/* Start an asynchronous write of buffer contents to block on volume */
 	@Override
 	public void startPush() {
 		// TODO Auto-generated method stub
 		pinned=true;
-		startRequest(this,DiskOperationType.WRITE);
+		try {
+			disk.startRequest(this,DiskOperationType.WRITE);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		dirty=false;
 	}
 
