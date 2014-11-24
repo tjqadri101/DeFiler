@@ -7,35 +7,58 @@ public class Inode {
 	/**
 	 * @param args
 	 */
-	private int myDFID;
-	private ArrayList<Integer> myBlockMap;
-	private int ID;
-	boolean mapped;
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	private int _dFID;
+	private int[] _blockMap;
+	private int _iter;
+	boolean _mapped;
+	private int _fileSize;
+	
+	public Inode() {
+		_mapped = false;
+		_blockMap = new int[Constants.BLOCK_MAP_SIZE];
+		_iter = 0;
+		_fileSize = 0;
+		
 	}
 	
-	public Inode(int ID) {
-		this.ID = ID;
+	public boolean updateBlockMap(int blockID, int numBytes){
+		if(_iter < _blockMap.length){
+			_blockMap[_iter] = blockID;
+			_iter++;
+			_fileSize += numBytes;
+			return true;
+		}
+		return false;
 	}
 	
-	public void updateBlockMap(int BlockId){
-		myBlockMap.add(BlockId);
+	public int[] getBlockMap(){
+		return _blockMap;
 	}
-	public void detach(int BlockId){
-		myBlockMap.remove(BlockId);
+	
+	public synchronized boolean utitlizeInode(){
+		if(!_mapped){
+			_mapped = true;
+			return true;
+		}
+		return false;
+		
 	}
 	public void updateDFID(int dfid){
-		myDFID = dfid;
-		mapped = true;
+		_dFID = dfid;
 	}
 	public int getDFID(){
-		return myDFID;
+		return _dFID;
 	}
 	
-	public ArrayList<Integer> getBlockMap(){
-		return myBlockMap;
+	public int getBlockID(int index){
+		int bID = _blockMap[index];
+		if(bID == 0)
+			return -1;
+		return bID;
+	}
+	
+	public int getFileSize(){
+		return _fileSize;
 	}
 
 }

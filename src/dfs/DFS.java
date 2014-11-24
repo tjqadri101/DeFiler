@@ -32,7 +32,7 @@ public class DFS extends AbstractDFS{
 	
 	
 	//Constructors
-	DFS(String volName, boolean format) {
+	public DFS(String volName, boolean format) {
 		super(volName, format);
 		//create Disk
 		try {
@@ -46,7 +46,7 @@ public class DFS extends AbstractDFS{
 		}
 	}
 
-	DFS(boolean format) {
+	public DFS(boolean format) {
 		super(format);
 		//create Disk
 		try {
@@ -60,7 +60,7 @@ public class DFS extends AbstractDFS{
 		}
 	}
 
-	DFS() {
+	public DFS() {
 		super();
 		//create Disk
 		try {
@@ -93,7 +93,7 @@ public class DFS extends AbstractDFS{
 		
 		//initiate Inodes
 		for (int i=0;i<Constants.MAX_DFILES;i++){
-			Inode inode = new Inode(i);
+			Inode inode = new Inode();
 			myInodes.add(inode);
 		}
 		
@@ -125,6 +125,9 @@ public class DFS extends AbstractDFS{
 	public static void writeInodeToDisk(){
 		
 	}
+	public ArrayList<Inode> listAllInodes(){
+		return inodes;
+	}
 	
 
 	@Override
@@ -139,7 +142,7 @@ public class DFS extends AbstractDFS{
 		
 		DBuffer dbuf = myDevilCache.getBlock(blockid);
 		myDevilCache.releaseBlock(dbuf);
-		inode.updateBlockMap(blockid);
+		inode.updateBlockMap(blockid, Constants.BLOCK_SIZE);
 		inode.updateDFID(dfid.getDFileID());
 		dfiles.add(dfid);
 		inodes.add(inode);
@@ -162,6 +165,44 @@ public class DFS extends AbstractDFS{
 		
 		if (!dfiles.contains(dFID)){
 			System.out.println("\n Requested file not found");
+			return -1;
+		}
+		
+		Inode i = getMyInode(dFID);
+		if(i==null){
+			System.out.println("\n Inode not found for requested ");
+			return -1;
+		}
+		
+		
+		for (int j=0; j<=count/Constants.BLOCK_SIZE; j++){
+			int bId = i.getBlockID(j);
+			if (bId ==-1){
+				System.out.println("\n Block not found in block map");
+				return -1;
+			}
+			DBuffer dbuf = myDevilCache.getBlock(bId);
+			int cap;
+			if(j==count/Constants.BLOCK_SIZE){
+				cap = count - Constants.BLOCK_SIZE*j;
+			}
+			else{
+				cap = Constants.BLOCK_SIZE;
+			}
+			dbuf.read(buffer, (startOffset+Constants.BLOCK_SIZE*j), cap);
+			myDevilCache.releaseBlock(dbuf);
+		}
+		
+		return 0;
+	}
+
+	@Override
+	public int write(DFileID dFID, byte[] buffer, int startOffset, int count) {
+		// TODO Auto-generated method stub
+		System.out.println("\n Now in write function");
+		
+		if (!dfiles.contains(dFID)){
+			System.out.println("\n Requested file not found");
 			return 0;
 		}
 		
@@ -170,11 +211,16 @@ public class DFS extends AbstractDFS{
 			System.out.println("\n Inode not found for requested ");
 			return 0;
 		}
-		
-		ArrayList<Integer> blocks = i.getBlockMap();
+	
 		
 		for (int j=0; j<=count/Constants.BLOCK_SIZE; j++){
-			DBuffer dbuf = myDevilCache.getBlock(blocks.get(j));
+			int bId = i.getBlockID(j);
+			if (bId ==-1){
+				System.out.println("\n Block not found in block map");
+				return -1;
+			}
+			DBuffer dbuf = myDevilCache.getBlock(bId);
+			
 			int cap;
 			if(j==count/Constants.BLOCK_SIZE){
 				cap = count - Constants.BLOCK_SIZE*j;
@@ -182,48 +228,29 @@ public class DFS extends AbstractDFS{
 			else{
 				cap = Constants.BLOCK_SIZE;
 			}
-			dbuf.read(buffer, Constants.BLOCK_SIZE*j, cap);
+			
+			if (dbuf==null){
+				int newBlock = myBlockIDs.poll();
+				i.updateBlockMap(newBlock, cap);
+			}
+			
+			dbuf.write(buffer, startOffset+Constants.BLOCK_SIZE*j, cap);
+			myDevilCache.releaseBlock(dbuf);
 		}
 		
-	/*	
-	    
-		file.getLock().readLock().lock();
-		List<Integer> blockIDs = getMappedBlockIDs(file);
-		System.out.println("Size of block ids is "+blockIDs.size()+"with numbers\n"+blockIDs.toString());
-		int size = blockIDs.size();
-		int start = startOffset;
-		int howMany = count;
-		if (file.getSize() < count)
-			howMany = file.getSize();
-
-		for (int i = 0; i < size; i++) {
-			DBuffer dbuffer = _cache.getBlock(blockIDs.get(i));
-
-			if (!dbuffer.checkValid()) {
-				dbuffer.startFetch();
-				dbuffer.waitValid();
-			}
-	
-			int read = dbuffer.read(buffer, start, howMany);
-			howMany -= read;
-			start += read;
-		}
-		file.getLock().readLock().unlock();
-		return count;
-		*/
-		return 0;
-	}
-
-	@Override
-	public int write(DFileID dFID, byte[] buffer, int startOffset, int count) {
-		// TODO Auto-generated method stub
+		
+		
+		
+		
 		return 0;
 	}
 
 	@Override
 	public int sizeDFile(DFileID dFID) {
 		// TODO Auto-generated method stub
-		return 0;
+		
+		Inode i = getMyInode(dFID);
+		return i.getFileSize();
 	}
 
 	@Override
