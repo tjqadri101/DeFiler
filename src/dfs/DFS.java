@@ -155,7 +155,17 @@ public class DFS extends AbstractDFS{
 	public void destroyDFile(DFileID dFID) {
 		// TODO Auto-generated method stub
 		
+		Inode i = getMyInode(dFID);
+		int[] bMap = i.getBlockMap();
+		int iter = 0;
+		while (bMap[iter]!=-1){
+			myBlockIDs.add(bMap[iter]);
+		}
+		i.freeInode();
+		myDFileIDs.add(dFID);
+		myInodes.add(i);
 		
+		//we need to remove inodes and dfileIds. 
 	}
 
 	@Override
@@ -204,16 +214,16 @@ public class DFS extends AbstractDFS{
 		
 		if (!dfiles.contains(dFID)){
 			System.out.println("\n Requested file not found");
-			return 0;
+			return -1;
 		}
 		
 		Inode i = getMyInode(dFID);
 		if(i==null){
 			System.out.println("\n Inode not found for requested ");
-			return 0;
+			return -1;
 		}
 	
-		
+		//REimplement file exceeds....
 		for (int j=0; j<=count/Constants.BLOCK_SIZE; j++){
 			int bId = i.getBlockID(j);
 			if (bId ==-1){
@@ -237,8 +247,11 @@ public class DFS extends AbstractDFS{
 				dbuf = myDevilCache.getBlock(newBlock);
 			}
 			
-			dbuf.write(buffer, startOffset+Constants.BLOCK_SIZE*j, cap);
-			myDevilCache.releaseBlock(dbuf);
+			if(dbuf.write(buffer, startOffset+Constants.BLOCK_SIZE*j, cap)==-1){
+				myDevilCache.releaseBlock(dbuf);
+				return -1;
+			}
+			i.updateFileSize(count);
 		}
 		
 		
