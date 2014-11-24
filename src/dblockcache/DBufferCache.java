@@ -1,7 +1,7 @@
 
 package dblockcache;
 import java.util.*;
-
+import virtualdisk.VirtualDisk;
 public class DBufferCache extends AbstractDBufferCache{
 	/*
 	 * Constructor: allocates a cacheSize number of cache blocks, each
@@ -10,10 +10,12 @@ public class DBufferCache extends AbstractDBufferCache{
 	private Queue<DBuffer> buffersInCache;
 	//private Map<Integer,DBuffer> cacheBlocks;
 	int maxBlocksInCache;
-	public DBufferCache(int cacheSize) {
+	VirtualDisk myDisk;
+	public DBufferCache(int cacheSize,VirtualDisk disk) {
 		super(cacheSize);
 		// TODO Auto-generated constructor stub
 		buffersInCache=new LinkedList<DBuffer>();
+		myDisk=disk;
 		//cacheBlocks = new Hashtable<Integer,DBuffer>();
 	}
 	/*
@@ -36,8 +38,10 @@ public class DBufferCache extends AbstractDBufferCache{
 		
 		for(DBuffer b: buffersInCache){
 			length++;
+			System.out.println("The blockId from cache is "+b.getBlockID());
 			if (b.getBlockID()==blockID){
 				//also move it in front of the queue,it's in the back right now
+				System.out.println("found a block in the cache");
 				buffersInCache.remove(b);
 				buffersInCache.add(b);
 				b.setHeld(true);
@@ -45,7 +49,8 @@ public class DBufferCache extends AbstractDBufferCache{
 			}
 		}
 		if (length==maxBlocksInCache) evict();
-		DBuffer newBuffer = new DBuffer(blockID);
+		DBuffer newBuffer = new DBuffer(blockID,myDisk);
+		buffersInCache.add(newBuffer);
 		newBuffer.startFetch();
 		return newBuffer;
 	}

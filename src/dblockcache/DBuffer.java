@@ -14,9 +14,10 @@ public class DBuffer extends AbstractDBuffer{
 	private boolean pinned;
 	private int blockId;
 	private byte[] dbuf = new byte[Constants.BLOCK_SIZE];
-	private VirtualDisk disk;
-	public DBuffer(int bId){
+	private VirtualDisk myDisk;
+	public DBuffer(int bId,VirtualDisk disk){
 		blockId = bId;
+		myDisk = disk; 
 	}
 	/* Start an asynchronous fetch of associated block from the volume */
 	@Override
@@ -24,8 +25,9 @@ public class DBuffer extends AbstractDBuffer{
 		// TODO Auto-generated method stub
 		pinned=true;
 		valid=false;
+		System.out.println("Now in fetch");
 		try {
-			disk.startRequest(this,DiskOperationType.READ);
+			myDisk.startRequest(this,DiskOperationType.READ);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -38,9 +40,10 @@ public class DBuffer extends AbstractDBuffer{
 	@Override
 	public void startPush() {
 		// TODO Auto-generated method stub
+		System.out.println("Now in push");
 		pinned=true;
 		try {
-			disk.startRequest(this,DiskOperationType.WRITE);
+			myDisk.startRequest(this,DiskOperationType.WRITE);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -106,6 +109,7 @@ public class DBuffer extends AbstractDBuffer{
 	public synchronized int read(byte[] buffer, int startOffset, int count) {
 		// TODO Auto-generated method stub
 		//some errors
+		System.out.println(valid);
 		waitValid();
 		for(int i=0;i<count;i++){
 			buffer[startOffset+i] = dbuf[i];
@@ -132,6 +136,7 @@ public class DBuffer extends AbstractDBuffer{
 	@Override
 	public synchronized void ioComplete() {
 		// TODO Auto-generated method stub
+		System.out.println("IO completed");
 		pinned=false;
 		valid=true;
 		dirty=false;
