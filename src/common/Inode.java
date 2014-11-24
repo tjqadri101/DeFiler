@@ -16,7 +16,7 @@ public class Inode {
 	}
 	
 	public Inode(int ID) {
-		ID = ID;
+		this.ID = ID;
 	}
 	
 	

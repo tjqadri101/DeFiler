@@ -23,7 +23,7 @@ public class DFS extends AbstractDFS{
     //BlockID Array
     private Queue<Integer> myBlockIDs;
     //dfile array
-    private Queue<Integer> dfiles;
+    private ArrayList<DFileID> dfiles;
     
     
     
@@ -78,7 +78,7 @@ public class DFS extends AbstractDFS{
 		myDevilCache = new DBufferCache(Constants.NUM_OF_CACHE_BLOCKS);
 		myInodes = new LinkedList<Inode>();
 		myDFileIDs = new LinkedList<DFileID>();
-		dfiles = new LinkedList<Integer>();
+		dfiles = new ArrayList<DFileID>();
 		
 		//initiate DFileIDs
 		for (int i=0;i<Constants.MAX_DFILES;i++){
@@ -93,7 +93,10 @@ public class DFS extends AbstractDFS{
 		}
 		
 		
-		int totalInodeBlocks = nearestCeiling(Constants.MAX_DFILES, Constants.INODE_SIZE/Constants.BLOCK_SIZE);
+		int inodeSpace = Constants.MAX_DFILES * Constants.INODE_SIZE;
+		int totalInodeBlocks = inodeSpace/Constants.BLOCK_SIZE;
+		if(inodeSpace%Constants.BLOCK_SIZE != 0)
+			totalInodeBlocks++;
 		
 		//initiate BlockIDS
 		for (int i=totalInodeBlocks;i<Constants.NUM_OF_BLOCKS;i++){
@@ -106,16 +109,16 @@ public class DFS extends AbstractDFS{
 	}
 	
 	//helper functions 
-	public static int nearestCeiling(int numerator, int denominator){
-		return (((numerator + denominator-1) )/denominator);
-	}
+
+
+	
 	public static void writeInodeToDisk(){
 		
 	}
 	
 
 	@Override
-	public DFileID createDFile() {
+	public synchronized DFileID createDFile() {
 		// TODO Auto-generated method stub
 		
 		DFileID dfid = myDFileIDs.poll();
@@ -125,7 +128,7 @@ public class DFS extends AbstractDFS{
 		DBuffer dbuf = myDevilCache.getBlock(blockid);
 		inode.updateBlockMap(blockid);
 		inode.updateDFID(dfid.getDFileID());
-		dfiles.add(dfid.getDFileID());
+		dfiles.add(dfid);
 		
 		return dfid;
 	}
@@ -158,7 +161,7 @@ public class DFS extends AbstractDFS{
 	public List<DFileID> listAllDFiles() {
 		// TODO Auto-generated method stub
 		
-		return null;
+		return dfiles;
 	}
 
 	@Override
