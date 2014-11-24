@@ -21,7 +21,7 @@ public class Inode {
 		_mapped = false;
 		_blockMap = new int[Constants.BLOCK_MAP_SIZE];
 		_iter = 0;
-		_fileSize = Constants.BLOCK_SIZE;
+		_fileSize = 0;
 	}
 	public void freeInode(){
 		init();
@@ -30,7 +30,6 @@ public class Inode {
 		if(_iter < _blockMap.length){
 			_blockMap[_iter] = blockID;
 			_iter++;
-			_fileSize += numBytes;
 			return true;
 		}
 		return false;
@@ -61,6 +60,11 @@ public class Inode {
 		if(bID == 0)
 			return -1;
 		return bID;
+	}
+	
+	public synchronized void updateFileSize(int byteCount){
+		if(_fileSize < byteCount)
+			_fileSize = byteCount;	
 	}
 	
 	public int getFileSize(){
