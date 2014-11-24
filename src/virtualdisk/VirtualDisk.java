@@ -42,7 +42,7 @@ public class VirtualDisk  extends AbstractVirtualDisk{
 	}
 
 	@Override
-	public void completeOldestRequest() throws IllegalArgumentException,
+	protected void completeOldestRequest() throws IllegalArgumentException,
 	IOException {
 		// TODO Auto-generated method stub
 		synchronized(_queue){
