@@ -17,10 +17,16 @@ public class Inode {
 		_mapped = false;
 		_blockMap = new int[Constants.BLOCK_MAP_SIZE];
 		_iter = 0;
-		_fileSize = 0;
+		_fileSize = Constants.BLOCK_SIZE;
 		
 	}
 	
+	public void freeInode(){
+		_mapped = false;
+		_blockMap = new int[Constants.BLOCK_MAP_SIZE];
+		_iter = 0;
+		_fileSize = Constants.BLOCK_SIZE;
+	}
 	public boolean updateBlockMap(int blockID, int numBytes){
 		if(_iter < _blockMap.length){
 			_blockMap[_iter] = blockID;

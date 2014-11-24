@@ -1,0 +1,16 @@
+Introduction 
+This lab asks you to build a simple multi-threaded file system called Devil File System, or 
+DeFiler.
+DeFiler presents an API for its clients to create and share files. We call these files 
+dfiles. Like a Unix file, a dfile is a sequence of bytes with a name. DeFiler clients can 
+create, destroy, read, and write dfiles.
+The set of dfiles (and related metadata) existing at any given time in a DeFiler instance 
+is called a volume. DeFiler stores each volume in a logical disk, which is really a file on 
+the underlying host. We call this file the host volume file or virtual disk file (VDF).
+Like any good file system, DeFiler can support multiple clients. For example, DeFiler 
+could run within a server and accept requests over a network. But for this lab, 
+we will drive DeFiler by running it as a library within test programs. A test program 
+creates multiple threads that call the DeFiler APIs. These threads are the clients of 
+DeFiler. We run the test programs on any Java-capable computer, called the host. A 
+running test program is an instance of DeFiler: it contains the DeFiler code and active 
+data structures that represent the current state of a DeFiler volume backed by a VDF.

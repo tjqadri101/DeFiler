@@ -1,0 +1,61 @@
+Contents  [hide] 
+1 Aspects of file systems
+1.1 Space management
+1.2 Filenames
+1.3 Directories
+1.4 Metadata
+1.5 File system as an abstract user interface
+1.6 Utilities
+1.7 Restricting and permitting access
+1.8 Maintaining integrity
+1.9 User data
+1.10 Using a file system
+1.11 Multiple file systems within a single system
+1.12 Design limitations
+2 Types of file systems
+2.1 Disk file systems
+2.1.1 Optical discs
+2.2 Flash file systems
+2.3 Tape file systems
+2.3.1 Tape formatting
+2.4 Database file systems
+2.5 Transactional file systems
+2.6 Network file systems
+2.7 Shared disk file systems
+2.8 Special file systems
+2.8.1 Device file systems
+2.8.2 Other special file systems
+2.9 Minimal file system / Audio-cassette storage
+2.10 Flat file systems
+3 File systems and operating systems
+3.1 Unix-like operating systems
+3.1.1 Linux
+3.1.2 Solaris
+3.1.3 OS X
+3.2 PC-BSD
+3.3 Plan 9
+3.4 Microsoft Windows
+3.4.1 FAT
+3.4.2 NTFS
+3.4.3 exFAT
+3.5 OpenVMS
+3.6 MVS [IBM Mainframe]
+3.7 Other file systems
+4 Limitations
+4.1 Converting the type of a file system
+4.1.1 In-place conversion
+4.1.2 Migrating to a different file system
+4.2 Long file paths and long file names
+5 See also
+6 References
+6.1 Cited references
+6.2 General references
+7 Further reading
+7.1 Books
+7.2 Online
+8 External links
+Aspects of file systems[edit]
+Space management[edit]
+Note: this only applies to file systems used in storage devices.
+
+
