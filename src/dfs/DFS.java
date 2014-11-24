@@ -167,7 +167,6 @@ public class DFS extends AbstractDFS{
 		
 		inodes.remove(i);
 		dfiles.remove(dFID);
-		//we need to remove inodes and dfileIds. 
 	}
 
 	@Override
