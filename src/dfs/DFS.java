@@ -32,54 +32,26 @@ public class DFS extends AbstractDFS{
 	
 	
 	//Constructors
-	public DFS(String volName, boolean format) {
+	public DFS(String volName, boolean format, DBufferCache cache) {
 		super(volName, format);
-		//create Disk
-		try {
-			myDevilDisk = new VirtualDisk(volName, format);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		myDevilCache = cache;
+		
 	}
 
-	public DFS(boolean format) {
+	public DFS(boolean format, DBufferCache cache) {
 		super(format);
-		//create Disk
-		try {
-			myDevilDisk = new VirtualDisk(format);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		myDevilCache = cache;
 	}
 
-	public DFS() {
+	public DFS(DBufferCache cache) {
 		super();
-		//create Disk
-		try {
-			myDevilDisk = new VirtualDisk();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		myDevilCache = cache;
 	}
 	
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
 		System.out.println("\n now in init function");
-		
-		myDevilCache = new DBufferCache(Constants.NUM_OF_CACHE_BLOCKS);
 		myInodes = new LinkedList<Inode>();
 		myDFileIDs = new LinkedList<DFileID>();
 		myBlockIDs = new LinkedList<Integer>();

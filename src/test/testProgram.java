@@ -5,14 +5,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
 
 
+
+
+import virtualdisk.VirtualDisk;
 import common.*;
+import dblockcache.DBufferCache;
 import dfs.DFS;
 
 public class testProgram {
@@ -20,15 +23,17 @@ public class testProgram {
     
     }
     
-    public void run()  throws InterruptedException{
+    public void run()  throws InterruptedException, FileNotFoundException, IOException{
     	
     	System.out.println("#test started");
+    	VirtualDisk disk = new VirtualDisk();
+    	DBufferCache cache = new DBufferCache(Constants.NUM_OF_CACHE_BLOCKS, disk);
     	
     	
     	//initialize DFS
-        DFS dfs = new DFS();
+        DFS dfs = new DFS(cache);
         dfs.init();
-        
+        Thread diskThread = new Thread(disk);
         
         
         //create files
@@ -86,6 +91,7 @@ public class testProgram {
         thread thread4 = new thread(dfs, data4);
         Thread t4 = new Thread(thread4);
         
+        diskThread.start();
         t1.start();
         t2.start();
         t3.start();
