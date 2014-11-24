@@ -182,41 +182,52 @@ public class DFS extends AbstractDFS{
 			else{
 				cap = Constants.BLOCK_SIZE;
 			}
-			dbuf.read(buffer, Constants.BLOCK_SIZE*j, cap);
+			dbuf.read(buffer, (startOffset+Constants.BLOCK_SIZE*j), cap);
+			myDevilCache.releaseBlock(dbuf);
 		}
 		
-	/*	
-	    
-		file.getLock().readLock().lock();
-		List<Integer> blockIDs = getMappedBlockIDs(file);
-		System.out.println("Size of block ids is "+blockIDs.size()+"with numbers\n"+blockIDs.toString());
-		int size = blockIDs.size();
-		int start = startOffset;
-		int howMany = count;
-		if (file.getSize() < count)
-			howMany = file.getSize();
-
-		for (int i = 0; i < size; i++) {
-			DBuffer dbuffer = _cache.getBlock(blockIDs.get(i));
-
-			if (!dbuffer.checkValid()) {
-				dbuffer.startFetch();
-				dbuffer.waitValid();
-			}
-	
-			int read = dbuffer.read(buffer, start, howMany);
-			howMany -= read;
-			start += read;
-		}
-		file.getLock().readLock().unlock();
-		return count;
-		*/
 		return 0;
 	}
 
 	@Override
 	public int write(DFileID dFID, byte[] buffer, int startOffset, int count) {
 		// TODO Auto-generated method stub
+		System.out.println("\n Now in write function");
+		
+		if (!dfiles.contains(dFID)){
+			System.out.println("\n Requested file not found");
+			return 0;
+		}
+		
+		Inode i = getMyInode(dFID);
+		if(i==null){
+			System.out.println("\n Inode not found for requested ");
+			return 0;
+		}
+		
+		ArrayList<Integer> blocks = i.getBlockMap();
+		
+		for (int j=0; j<=count/Constants.BLOCK_SIZE; j++){
+			DBuffer dbuf = myDevilCache.getBlock(blocks.get(j));
+			if (dbuf==null){
+				int newBlock = myBlockIDs.poll();
+				i.updateBlockMap(newBlock);
+			}
+			int cap;
+			if(j==count/Constants.BLOCK_SIZE){
+				cap = count - Constants.BLOCK_SIZE*j;
+			}
+			else{
+				cap = Constants.BLOCK_SIZE;
+			}
+			dbuf.write(buffer, startOffset+Constants.BLOCK_SIZE*j, cap);
+			myDevilCache.releaseBlock(dbuf);
+		}
+		
+		
+		
+		
+		
 		return 0;
 	}
 
