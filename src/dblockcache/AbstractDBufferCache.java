@@ -19,10 +19,10 @@ public abstract class AbstractDBufferCache {
 	 * caller releases it. A "held" buffer cannot be evicted: its block ID
 	 * cannot change.
 	 */
-	public abstract AbstractDBuffer getBlock(int blockID);
+	public abstract DBuffer getBlock(int blockID);
 
 	/* Release the buffer so that others waiting on it can use it */
-	public abstract void releaseBlock(AbstractDBuffer buf);
+	public abstract void releaseBlock(DBuffer buf);
 	
 	/*
 	 * sync() writes back all dirty blocks to the volume and wait for completion.

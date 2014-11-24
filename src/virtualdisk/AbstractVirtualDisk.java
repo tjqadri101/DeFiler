@@ -9,17 +9,20 @@ package virtualdisk;
 import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Queue;
+import java.util.LinkedList;
 
 import common.Constants;
 import common.Constants.DiskOperationType;
-import dblockcache.AbstractDBuffer;
+import dblockcache.DBuffer;
 
-public abstract class AbstractVirtualDisk implements IVirtualDisk {
+public abstract class AbstractVirtualDisk implements IVirtualDisk, Runnable {
 
 	private String _volName;
 	private RandomAccessFile _file;
 	private int _maxVolSize;
-
+    protected Queue<Request> _queue;
+    protected boolean _done;
 	/*
 	 * VirtualDisk Constructors
 	 */
@@ -46,6 +49,8 @@ public abstract class AbstractVirtualDisk implements IVirtualDisk {
 			formatStore();
 		}
 		/* Other methods as required */
+		_queue = new LinkedList<Request>();
+		_done = false;
 	}
 	
 	public AbstractVirtualDisk(boolean format) throws FileNotFoundException,
@@ -63,8 +68,15 @@ public abstract class AbstractVirtualDisk implements IVirtualDisk {
 	 * -- buf is an DBuffer object that needs to be read/write from/to the volume.	
 	 * -- operation is either READ or WRITE  
 	 */
-	public abstract void startRequest(AbstractDBuffer buf, DiskOperationType operation) throws IllegalArgumentException,
+	public abstract void startRequest(DBuffer buf, DiskOperationType operation) throws IllegalArgumentException,
 			IOException;
+	
+	/*
+	 * Get the oldest request from the queue (FIFO structure) and implement it
+	 * wait if the queue is empty
+	 */
+	public abstract void completeOldestRequest() throws IllegalArgumentException,
+	IOException;
 	
 	/*
 	 * Clear the contents of the disk by writing 0s to it
@@ -96,7 +108,7 @@ public abstract class AbstractVirtualDisk implements IVirtualDisk {
 	 * Reads the buffer associated with DBuffer to the underlying
 	 * device/disk/volume
 	 */
-	private int readBlock(AbstractDBuffer buf) throws IOException {
+	protected int readBlock(DBuffer buf) throws IOException {
 		int seekLen = buf.getBlockID() * Constants.BLOCK_SIZE;
 		/* Boundary check */
 		if (_maxVolSize < seekLen + Constants.BLOCK_SIZE) {
@@ -110,7 +122,7 @@ public abstract class AbstractVirtualDisk implements IVirtualDisk {
 	 * Writes the buffer associated with DBuffer to the underlying
 	 * device/disk/volume
 	 */
-	private void writeBlock(AbstractDBuffer buf) throws IOException {
+	protected void writeBlock(DBuffer buf) throws IOException {
 		int seekLen = buf.getBlockID() * Constants.BLOCK_SIZE;
 		_file.seek(seekLen);
 		_file.write(buf.getBuffer(), 0, Constants.BLOCK_SIZE);
