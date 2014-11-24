@@ -213,6 +213,11 @@ public class DFS extends AbstractDFS{
 		// TODO Auto-generated method stub
 		System.out.println("\n Now in write function");
 		
+		if (count > Constants.MAX_FILE_BLOCKS*Constants.BLOCK_SIZE){
+			System.out.println("\n Write exceeds maximum file size");
+			return -1;
+		}
+		
 		if (!dfiles.contains(dFID)){
 			System.out.println("\n Requested file not found");
 			return -1;
@@ -224,7 +229,7 @@ public class DFS extends AbstractDFS{
 			return -1;
 		}
 	
-		//REimplement file exceeds....
+		
 		for (int j=0; j<=count/Constants.BLOCK_SIZE; j++){
 			int bId = i.getBlockID(j);
 			if (bId ==-1){
@@ -243,7 +248,7 @@ public class DFS extends AbstractDFS{
 			if (dbuf==null){
 				int newBlock = myBlockIDs.poll();
 				if(!i.updateBlockMap(newBlock, cap)){
-					System.out.println("\n File exceeds maximum bound");
+					System.out.println("\n File exceeds block bounds");
 				}
 				dbuf = myDevilCache.getBlock(newBlock);
 			}
