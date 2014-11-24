@@ -2,7 +2,7 @@ package virtualdisk;
 import java.io.IOException;
 
 import common.Constants.DiskOperationType;
-import dblockcache.DBuffer;
+import dblockcache.AbstractDBuffer;
 
 
 public interface IVirtualDisk {
@@ -12,6 +12,6 @@ public interface IVirtualDisk {
 	 *  -- buf is an DBuffer object that needs to be read/write from/to the volume
 	 *  -- operation is either READ or WRITE
 	 */
-	public void startRequest(DBuffer buf, DiskOperationType operation)
+	public void startRequest(AbstractDBuffer buf, DiskOperationType operation)
 			throws IllegalArgumentException, IOException;
 }
