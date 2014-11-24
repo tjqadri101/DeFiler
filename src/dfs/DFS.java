@@ -32,7 +32,7 @@ public class DFS extends AbstractDFS{
 	
 	
 	//Constructors
-	DFS(String volName, boolean format) {
+	public DFS(String volName, boolean format) {
 		super(volName, format);
 		//create Disk
 		try {
@@ -46,7 +46,7 @@ public class DFS extends AbstractDFS{
 		}
 	}
 
-	DFS(boolean format) {
+	public DFS(boolean format) {
 		super(format);
 		//create Disk
 		try {
@@ -60,7 +60,7 @@ public class DFS extends AbstractDFS{
 		}
 	}
 
-	DFS() {
+	public DFS() {
 		super();
 		//create Disk
 		try {
@@ -124,6 +124,9 @@ public class DFS extends AbstractDFS{
 	}
 	public static void writeInodeToDisk(){
 		
+	}
+	public ArrayList<Inode> listAllInodes(){
+		return inodes;
 	}
 	
 
