@@ -75,7 +75,7 @@ public abstract class AbstractVirtualDisk implements IVirtualDisk, Runnable {
 	 * Get the oldest request from the queue (FIFO structure) and implement it
 	 * wait if the queue is empty
 	 */
-	public abstract void completeOldestRequest() throws IllegalArgumentException,
+	protected abstract void completeOldestRequest() throws IllegalArgumentException,
 	IOException;
 	
 	/*
