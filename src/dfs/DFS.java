@@ -108,6 +108,7 @@ public class DFS extends AbstractDFS{
 			int inodeCount = 0;
 			for(int i = 1; i <= _totalInodeBlocks; i++){
 				int seek = 0;
+				System.out.println("Reading inode Block"+i);
 				DBuffer buffer = myDevilCache.getBlock(i);
 				byte[] blockByte = new byte[Constants.BLOCK_SIZE];
 				buffer.read(blockByte, 0, Constants.BLOCK_SIZE);
@@ -120,7 +121,7 @@ public class DFS extends AbstractDFS{
 					}
 					
 					if(test.initFromDisk(inodeData)){
-						//System.out.println("true" + test.getID());
+						System.out.println("true" + test.getDFileID());
 						myInodes.remove(test);
 						inodes.add(test);
 						myDFileIDs.remove(test.getDFileID());
@@ -140,7 +141,8 @@ public class DFS extends AbstractDFS{
 			}
 		}
 		
-		System.out.println("debug");
+		System.out.println("Initializing with dfile list: ");
+		System.out.println(myDFileIDs);
 		
 		
 	}
@@ -338,8 +340,8 @@ public class DFS extends AbstractDFS{
 	//Write inode to DBufferCache when an appropriate update is used
 	private void writeInode(Inode inode){
 		byte[] inodeData = inode.getAllInodeData();
-		DBuffer dbuf = myDevilCache.getBlock(inode.getID()/_totalInodeBlocks + 1);
-		System.out.println("testing " + (inode.getID()/_totalInodeBlocks + 1));
+		DBuffer dbuf = myDevilCache.getBlock((inode.getID()/(Constants.BLOCK_SIZE/Constants.INODE_SIZE)) + 1);
+		//System.out.println("testing " + (inode.getID()/_totalInodeBlocks + 1));
 		
 		byte[] blockByte = new byte[Constants.BLOCK_SIZE];
 		dbuf.read(blockByte, 0, Constants.BLOCK_SIZE);
