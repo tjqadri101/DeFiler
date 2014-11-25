@@ -28,7 +28,7 @@ public class Inode {
 	public synchronized void freeInode(){
 		init();
 	}
-	public boolean updateBlockMap(int blockID, int numBytes){
+	public synchronized boolean updateBlockMap(int blockID, int numBytes){
 		if(_iter < _blockMap.length){
 			_blockMap[_iter] = blockID;
 			_iter++;
