@@ -38,7 +38,9 @@ public class Inode {
 	}
 
 	public int[] getBlockMap(){
-		return _blockMap;
+		synchronized(_blockMap){
+			return _blockMap;
+		}
 	}
 
 	public synchronized boolean utitlizeInode(){
@@ -53,22 +55,22 @@ public class Inode {
 		_dFID = dfid;
 		updateBlockMap(blockID, 0);
 	}
-	public int getDFID(){
+	public synchronized int getDFID(){
 		return _dFID;
 	}
 
-	public DFileID getDFileID(){
+	public synchronized DFileID getDFileID(){
 		return new DFileID(_dFID);
 	}
 
-	public int getBlockID(int index){
+	public synchronized int getBlockID(int index){
 		int bID = _blockMap[index];
 		if(bID == 0)
 			return -1;
 		return bID;
 	}
 
-	public int getID(){
+	public synchronized int getID(){
 		return _inodeID;
 	}
 
@@ -77,12 +79,12 @@ public class Inode {
 			_fileSize = byteCount;	
 	}
 
-	public int getFileSize(){
+	public synchronized int getFileSize(){
 		return _fileSize;
 	}
 
 	//call this method to write an inode in byte[] for to DBuffer
-	public byte[] getAllInodeData(){
+	public synchronized byte[] getAllInodeData(){
 		int[] intInodeData = new int[Constants.MAX_FILE_BLOCKS + 5]; 
 		intInodeData[0] = _inodeID;
 		intInodeData[1] = _dFID;
@@ -96,7 +98,7 @@ public class Inode {
 	}
 
 	//call this method to recreate an inode from disk data
-	public boolean initFromDisk(byte[] inodeData){
+	public synchronized boolean initFromDisk(byte[] inodeData){
 		int[] intInodeData = Utils.bytesToInts(inodeData);
 		_inodeID = intInodeData[0];
 		_dFID = intInodeData[1];
@@ -116,7 +118,7 @@ public class Inode {
 		}
 		return false;
 	}
-	public void removeBIDsFromList(Queue<Integer> myBlockIDs) {
+	public synchronized void removeBIDsFromList(Queue<Integer> myBlockIDs) {
 		// TODO Auto-generated method stub
 		for(int i = 0; i < _blockMap.length; i++){
 
