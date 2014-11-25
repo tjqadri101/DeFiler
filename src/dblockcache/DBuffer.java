@@ -25,7 +25,7 @@ public class DBuffer extends AbstractDBuffer{
 		// TODO Auto-generated method stub
 		pinned=true;
 		valid=false;
-		System.out.println("Now in fetch");
+		//System.out.println("Now in fetch");
 		try {
 			myDisk.startRequest(this,DiskOperationType.READ);
 		} catch (IllegalArgumentException e) {
@@ -40,7 +40,7 @@ public class DBuffer extends AbstractDBuffer{
 	@Override
 	public void startPush() {
 		// TODO Auto-generated method stub
-		System.out.println("Now in push");
+		//System.out.println("Now in push");
 		pinned=true;
 		try {
 			myDisk.startRequest(this,DiskOperationType.WRITE);

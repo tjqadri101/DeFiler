@@ -101,7 +101,8 @@ public class testProgram {
         t2.join();
         t3.join();
         t4.join();
-
+        //disk.done();
+        //diskThread.join();
         
         
         System.out.println("\n List DFileIDs");
