@@ -14,6 +14,7 @@ import java.nio.file.Path;
 
 
 
+
 import virtualdisk.VirtualDisk;
 import common.*;
 import dblockcache.DBuffer;
@@ -42,7 +43,7 @@ public class testProgram {
         
         
         //create files
-        Path path1 = Paths.get("src/test/file3.txt");
+        Path path1 = Paths.get("src/test/file1.txt");
         byte[] data1 = null;
         
         Path path2 = Paths.get("src/test/file2.txt");
@@ -84,44 +85,48 @@ public class testProgram {
 
 
 		// create multiple threads that will read from a file and write back to it.
-        thread thread1 = new thread(dfs, data1);
+        UserThread thread1 = new UserThread(dfs, data1);
         Thread t1 = new Thread(thread1);
         
-        thread thread2 = new thread(dfs, data2);
+        UserThread thread2 = new UserThread(dfs, data2);
         Thread t2 = new Thread(thread2);
         
-        thread thread3 = new thread(dfs, data3);
+        UserThread thread3 = new UserThread(dfs, data3);
         Thread t3 = new Thread(thread3);
         
-        thread thread4 = new thread(dfs, data4);
+        UserThread thread4 = new UserThread(dfs, data4);
         Thread t4 = new Thread(thread4);
         
         
         t1.start();
-      /*  t2.start();
+        t2.start();
         t3.start();
         t4.start();
 
         
         t2.join();
         t3.join();
-        t4.join(); */
+        t4.join(); 
         t1.join();
 
-        readerThread myT1 = new readerThread(dfs, 262);
+        ReaderThread myT1 = new ReaderThread(dfs, 0);
         Thread t5 = new Thread(myT1);
       
-        readerThread myT2 = new readerThread(dfs, 0);
+        ReaderThread myT2 = new ReaderThread(dfs, 1);
         Thread t6 = new Thread(myT2);
         
-        readerThread myT3 = new readerThread(dfs, 0);
+        int inodeSpace = Constants.MAX_DFILES * Constants.INODE_SIZE;
+		int totalInodeBlocks = inodeSpace/Constants.BLOCK_SIZE;
+		if(inodeSpace%Constants.BLOCK_SIZE != 0)
+			totalInodeBlocks++;
+        ReaderThread myT3 = new ReaderThread(dfs, 2);// data block
         Thread t7 = new Thread(myT3);
         
-        readerThread myT4 = new readerThread(dfs, 0);
+        ReaderThread myT4 = new ReaderThread(dfs, 3);//data block
         Thread t8 = new Thread(myT4);
         
         
-      /*  t5.start();
+        t5.start();
         t6.start();
         t7.start();
         t8.start();
@@ -132,8 +137,7 @@ public class testProgram {
         t6.join();
         t7.join();
         t8.join();
-         t5.join();*/
-         
+         t5.join();  
        
  
         System.out.println("\n List DFileIDs");
@@ -148,10 +152,10 @@ public class testProgram {
         
         
         dfs.sync();
-        //disk.done();
-        //diskThread.join();
+        disk.done();
+        diskThread.join();
         
-        
+       
         System.out.println("\n Test Successful");
         
 

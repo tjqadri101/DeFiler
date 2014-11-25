@@ -35,7 +35,7 @@ public class VirtualDisk  extends AbstractVirtualDisk{
 			throws IllegalArgumentException, IOException {
 		// TODO Auto-generated method stub
 		synchronized(_queue){
-			while(!_queue.offer(new Request(buf, operation))&!_done);
+			while(!_queue.offer(new Request(buf, operation)));
 			_queue.notifyAll();
 		}
 
@@ -46,7 +46,7 @@ public class VirtualDisk  extends AbstractVirtualDisk{
 	IOException {
 		// TODO Auto-generated method stub
 		synchronized(_queue){
-			while(_queue.isEmpty()&!_done){
+			while(_queue.isEmpty()&&!_done){
 				try {
 					_queue.wait();
 				} catch (InterruptedException e) {
@@ -69,12 +69,22 @@ public class VirtualDisk  extends AbstractVirtualDisk{
 				e.printStackTrace();
 			} finally {
 				req._buffer.ioComplete();
+				if(_queue.isEmpty()) _queue.notifyAll();
 			}
+			
 		}
 	}
-
+	//Call this after DFS.sync()
 	public void done(){
 		synchronized(_queue){
+			while(!_queue.isEmpty()){
+				try {
+					_queue.wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}	
 			_done = true;
 			_queue.notifyAll();
 		}

@@ -5,12 +5,12 @@ import dfs.DFS;
 
 
 
-public class thread implements Runnable {
+public class UserThread implements Runnable {
     private DFS dfs;
     private byte[] data;
     private DFileID file;
     
-    public thread(DFS dfs, byte[] data) {
+    public UserThread(DFS dfs, byte[] data) {
         this.dfs = dfs;
         this.data = data;
     }
@@ -24,7 +24,7 @@ public class thread implements Runnable {
         file = myFileID;
         dfs.write(myFileID, data, 0, data.length);
         
-        System.out.println("Printing file");
+       // System.out.println(printFile()); uncomment this if you want to print a whole file
        
 
     }

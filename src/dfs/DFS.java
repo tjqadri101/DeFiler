@@ -108,7 +108,7 @@ public class DFS extends AbstractDFS{
 			int inodeCount = 0;
 			for(int i = 1; i <= _totalInodeBlocks; i++){
 				int seek = 0;
-				System.out.println("Reading inode Block"+i);
+				//System.out.println("Reading inode Block"+i);
 				DBuffer buffer = myDevilCache.getBlock(i);
 				byte[] blockByte = new byte[Constants.BLOCK_SIZE];
 				buffer.read(blockByte, 0, Constants.BLOCK_SIZE);
@@ -171,6 +171,11 @@ public class DFS extends AbstractDFS{
 		// TODO Auto-generated method stub
 
 		//System.out.println("\n now in createFile function");
+		if(myDFileIDs.isEmpty() || myBlockIDs.isEmpty() || myInodes.isEmpty()){
+			System.out.println("Error: Ran out of space.");
+			System.out.println("Out of inodes/fileIDs/blocks");
+			System.exit(1);
+		}
 
 		DFileID dfid = myDFileIDs.poll();
 		int blockid = myBlockIDs.poll();
@@ -291,6 +296,11 @@ public class DFS extends AbstractDFS{
 
 			if (dbuf==null){
 				//System.out.println("\n Block not found in block map");
+				if(myBlockIDs.isEmpty()){
+					System.out.println("Error: Ran out of space.");
+					System.out.println("Out of blocks");
+					System.exit(1);
+				}
 				int newBlock = myBlockIDs.poll();
 				if(!i.updateBlockMap(newBlock, cap)){
 					System.out.println("\n File exceeds block bounds");

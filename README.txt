@@ -93,9 +93,10 @@ The inodes contain the main information about a dfile. This metadata information
 We are assuming that dfiles and inodes are one to one mapped. 
 The largest write to a file updates the blockMap and the size of the file. The dfid is bestowed upon creation. 
 
-Our code works for a new VDF file. Our code doesn't completely work upon re-initialization of a used disk. 
-This is because our code to read and rebuild inode mappings for an old VDF doesn't completely work. We will probably have a re-upload of the home work
-should we debug our code appropriately. 
+Our code works for a new VDF file as well as an old VDF. It successfully maps the stored inodes from an old VDF to our DFS layer during DFS init().
+The test programs creates four UserThreads that create DFiles, write to the DFiles, and potentially read from the DFiles (can be commented out in UserThread class)
+It also creates four reader threads that take in a DFileID and read 1 block of the corresponding file. The data read is also printed. Finally, the utilized inodes
+are also printed out. The program then calls sync() and exits. 
 
 /************************
  * Feedback on the lab
