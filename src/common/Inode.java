@@ -19,7 +19,7 @@ public class Inode {
 		init();
 
 	}
-	private void init(){
+	private synchronized void init(){
 		_blockMap = new int[Constants.MAX_FILE_BLOCKS];
 		_iter = 0;
 		_fileSize = 0;
@@ -32,6 +32,8 @@ public class Inode {
 		if(_iter < _blockMap.length){
 			_blockMap[_iter] = blockID;
 			_iter++;
+			if(_mappedBool == 0)
+				_mappedBool = 1;
 			return true;
 		}
 		return false;
@@ -42,15 +44,17 @@ public class Inode {
 			return _blockMap;
 		}
 	}
-
-	public synchronized boolean utitlizeInode(){
-		if(_mappedBool == 0){
-			_mappedBool = 1;
-			return true;
+	
+	public synchronized void printBlockMap(){
+		System.out.println("Printing Inode " + _inodeID + " block map.");
+		for(int i = 0; i < _blockMap.length; i++){
+			if(_blockMap[i] == 0) break;
+			System.out.println("Block ID: " + _blockMap[i]);
 		}
-		return false;
-
+		System.out.println("Inode " + _inodeID + " block map print complete.");
 	}
+
+	
 	public synchronized void updateDFID(int dfid, int blockID){
 		_dFID = dfid;
 		updateBlockMap(blockID, 0);
@@ -83,22 +87,32 @@ public class Inode {
 		return _fileSize;
 	}
 
+	
+	
 	//call this method to write an inode in byte[] for to DBuffer
 	public synchronized byte[] getAllInodeData(){
 		int[] intInodeData = new int[Constants.MAX_FILE_BLOCKS + 5]; 
 		intInodeData[0] = _inodeID;
+		//System.out.println("ID " + _inodeID);
 		intInodeData[1] = _dFID;
+		//System.out.println("dFID " + _dFID);
 		intInodeData[2] = _mappedBool;
+		//System.out.println("mapped " + _mappedBool);
 		intInodeData[3] = _fileSize;
+		//System.out.println("Size " + _fileSize);
 		intInodeData[4] = _iter;
+		//System.out.println("Iter" + _iter);
 		for(int i = 5; i < intInodeData.length; i++ ){
 			intInodeData[i] = _blockMap[i - 5];
+			//if(_blockMap[i-5] > 0)
+					//System.out.println(_blockMap[i-5]);
 		}
 		return Utils.intsToBytes(intInodeData);
 	}
 
 	//call this method to recreate an inode from disk data
 	public synchronized boolean initFromDisk(byte[] inodeData){
+		
 		int[] intInodeData = Utils.bytesToInts(inodeData);
 		_inodeID = intInodeData[0];
 		_dFID = intInodeData[1];
@@ -108,6 +122,7 @@ public class Inode {
 		for(int i = 5; i < intInodeData.length; i++){
 			_blockMap[i-5] = intInodeData[i];
 		}
+		//System.out.println("testing " + _inodeID);
 		return _mappedBool == 1;
 	}
 

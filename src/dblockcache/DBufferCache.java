@@ -30,27 +30,29 @@ public class DBufferCache extends AbstractDBufferCache{
 		// TODO Auto-generated method stub
 		int length=0;
 		if (blockID<0) return null;
+		//if(blockID == 0)
+			//System.out.println("Block 0 queried");
 		/*if(cacheBlocks.containsKey(blockID)){
-			
+
 			return cacheBlocks.get(blockID);
 		}
 		if(cacheBlocks.size()==maxBlocksInCache){
 			evict();
 		}*/
 		if (!buffersInCache.isEmpty()){
-		
-		for(DBuffer b: buffersInCache){
-			length++;
-			//System.out.println("The blockId from cache is "+b.getBlockID());
-			if (b.getBlockID()==blockID){
-				//also move it in front of the queue,it's in the back right now
-				//System.out.println("found a block in the cache");
-				buffersInCache.remove(b);
-				buffersInCache.add(b);
-				b.setHeld(true);
-				return b;
+
+			for(DBuffer b: buffersInCache){
+				length++;
+				//System.out.println("The blockId from cache is "+b.getBlockID());
+				if (b.getBlockID()==blockID){
+					//also move it in front of the queue,it's in the back right now
+					//System.out.println("found a block in the cache");
+					buffersInCache.remove(b);
+					buffersInCache.add(b);
+					b.setHeld(true);
+					return b;
+				}
 			}
-		}
 		}
 		if (length==maxBlocksInCache) evict();
 		DBuffer newBuffer = new DBuffer(blockID,myDisk);

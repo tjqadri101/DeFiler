@@ -142,7 +142,7 @@ public class DBuffer extends AbstractDBuffer{
 	@Override
 	public synchronized void ioComplete() {
 		// TODO Auto-generated method stub
-		System.out.println("IO completed");
+		//System.out.println("IO completed");
 		pinned=false;
 		valid=true;
 		dirty=false;

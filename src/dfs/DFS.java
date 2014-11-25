@@ -87,17 +87,24 @@ public class DFS extends AbstractDFS{
 		byte[] vdfStatusArr = new byte[Constants.INTEGER_SIZE];
 		
 		buf.read(vdfStatusArr, 0, Constants.INTEGER_SIZE);
-
+		//System.out.println("Reading block 0");
+		//System.out.println(vdfStatusArr.length);
+		//System.out.println(vdfStatusArr[3]);
 		
 		//VDF used for first time
 		if(Utils.bytesToInt(vdfStatusArr) == 0){
-			System.out.println("firsttime");
-			vdfStatusArr = Utils.intToBytes(1);
-			buf.write(vdfStatusArr, Constants.HEADER_BLOCK_ID, Constants.INTEGER_SIZE);
+			System.out.println("First time");
+			byte[] vdfStatusArr2 = Utils.intToBytes(1);
+			buf.write(vdfStatusArr2, 0, Constants.INTEGER_SIZE);
+			//buf.read(vdfStatusArr, 0, Constants.INTEGER_SIZE);
+			//System.out.println("Reading block 0");
+			//System.out.println(vdfStatusArr.length);
+			//System.out.println(vdfStatusArr[3]);
 		}
 		//update inodes from VDF
 		else{
-			System.out.println("secondtime");
+			//System.out.println("Debug init in else");
+			System.out.println("VDF used again");
 			int inodeCount = 0;
 			for(int i = 1; i <= _totalInodeBlocks; i++){
 				int seek = 0;
@@ -108,13 +115,12 @@ public class DFS extends AbstractDFS{
 					Inode test = new Inode(-1);
 					byte[] inodeData = new byte[Constants.INODE_SIZE];
 
-					buffer.read(inodeData, 0, Constants.INODE_SIZE);
-
 					for(int j = 0; j < Constants.INODE_SIZE; j++){
 						inodeData[j] = blockByte[j+seek];
 					}
-
+					
 					if(test.initFromDisk(inodeData)){
+						//System.out.println("true" + test.getID());
 						myInodes.remove(test);
 						inodes.add(test);
 						myDFileIDs.remove(test.getDFileID());
@@ -126,7 +132,7 @@ public class DFS extends AbstractDFS{
 				}
 			}
 
-			System.out.println("debug"+ inodeCount);
+			//System.out.println("debug"+ inodeCount);
 
 			if(inodeCount > Constants.MAX_DFILES){
 				System.out.println("Error. More inodes than possible read from VDF in initiallization");
@@ -148,12 +154,11 @@ public class DFS extends AbstractDFS{
 		}
 		return null;
 	}
-	public static void writeInodeToDisk(){
 
-	}
-	public void listAllInodes(){
+	//print all mapped inodes
+	public void printAllInodes(){
 		for(Inode i: inodes){
-			System.out.println(i.getBlockMap());
+			i.printBlockMap();
 		}
 	}
 	
@@ -318,20 +323,24 @@ public class DFS extends AbstractDFS{
 	@Override
 	public List<DFileID> listAllDFiles() {
 		// TODO Auto-generated method stub
-
-		return dfiles;
+		synchronized(dfiles){
+			return dfiles;
+		}
 	}
 
 	@Override
 	public void sync() {
 		// TODO Auto-generated method stub
+		System.out.println("sync started");
 		myDevilCache.sync();
 	}
 	
 	//Write inode to DBufferCache when an appropriate update is used
 	private void writeInode(Inode inode){
 		byte[] inodeData = inode.getAllInodeData();
-		DBuffer dbuf = myDevilCache.getBlock(inode.getID()/_totalInodeBlocks);
+		DBuffer dbuf = myDevilCache.getBlock(inode.getID()/_totalInodeBlocks + 1);
+		System.out.println("testing " + (inode.getID()/_totalInodeBlocks + 1));
+		
 		byte[] blockByte = new byte[Constants.BLOCK_SIZE];
 		dbuf.read(blockByte, 0, Constants.BLOCK_SIZE);
 		int seek = (inode.getID() % (Constants.BLOCK_SIZE/Constants.INODE_SIZE))*Constants.INODE_SIZE;

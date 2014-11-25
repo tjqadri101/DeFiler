@@ -13,8 +13,10 @@ import java.nio.file.Path;
 
 
 
+
 import virtualdisk.VirtualDisk;
 import common.*;
+import dblockcache.DBuffer;
 import dblockcache.DBufferCache;
 import dfs.DFS;
 
@@ -140,12 +142,16 @@ public class testProgram {
         }
         
         System.out.println("\n List Inodes mapping");
-        dfs.listAllInodes();
+        dfs.printAllInodes();
 
 
+        
+        
         dfs.sync();
         //disk.done();
         //diskThread.join();
+        
+        
         System.out.println("\n Test Successful");
         
 
