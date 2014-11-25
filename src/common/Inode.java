@@ -49,7 +49,7 @@ public class Inode {
 		return false;
 		
 	}
-	public void updateDFID(int dfid, int blockID){
+	public synchronized void updateDFID(int dfid, int blockID){
 		_dFID = dfid;
 		updateBlockMap(blockID, 0);
 	}
