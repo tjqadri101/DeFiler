@@ -66,12 +66,22 @@ public class Utils {
 		return bytes;
 	}
 
+	public static byte[] intsToBytes(int[] ints) {
+		byte[] bytes = new byte[Integer.SIZE * ints.length];
+		int seek = 0;
+		for (int num : ints) {
+			byte[] byteTmp = intToBytes(num);
+			System.arraycopy(byteTmp, 0, bytes, seek, Integer.SIZE);
+			seek += Integer.SIZE;
+		}
+		return bytes;
+	}
 	//for test.
 	public static void main(String[] args) {
-		long[] longs = { 1L, 0L, -2L, 1000L, 1234567890L, 12345678909876L };
-		byte[] buf = longsToBytes(longs);
-		long[] longs2 = bytesToLongs(buf);
-		for (long num : longs2)
+		int[] ints = { 1, 0, -2, 1000, 12345, 123456 };
+		byte[] buf = intsToBytes(ints);
+		int[] ints2 = bytesToInts(buf);
+		for (int num : ints2)
 			System.out.println(num);
 	}
 }
