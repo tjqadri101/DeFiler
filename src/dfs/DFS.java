@@ -35,7 +35,6 @@ public class DFS extends AbstractDFS{
 	public DFS(String volName, boolean format, DBufferCache cache) {
 		super(volName, format);
 		myDevilCache = cache;
-
 	}
 
 	public DFS(boolean format, DBufferCache cache) {
