@@ -24,7 +24,7 @@ public class thread implements Runnable {
         file = myFileID;
         dfs.write(myFileID, data, 0, data.length);
         
-        System.out.println("\n PRINTING FILE ---");
+        System.out.println(printFile());
 
     }
 

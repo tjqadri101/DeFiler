@@ -35,13 +35,12 @@ public class testProgram {
         Thread diskThread = new Thread(disk);
         diskThread.start();
         
-        DFS dfs = new DFS(true, cache);
+        DFS dfs = new DFS(cache);
         dfs.init();
         
         
-        System.out.println("debug 1");
         //create files
-        Path path1 = Paths.get("src/test/file1.txt");
+        Path path1 = Paths.get("src/test/file3.txt");
         byte[] data1 = null;
         
         Path path2 = Paths.get("src/test/file2.txt");
@@ -97,29 +96,31 @@ public class testProgram {
         
         
         t1.start();
-        t2.start();
+      /*  t2.start();
         t3.start();
         t4.start();
 
-        t1.join();
+        
         t2.join();
         t3.join();
-        t4.join();
+        t4.join(); */
+        t1.join();
 
-        readerThread myT1 = new readerThread(dfs, data4);
+        readerThread myT1 = new readerThread(dfs, 262);
         Thread t5 = new Thread(myT1);
       
-        readerThread myT2 = new readerThread(dfs, data4);
+        readerThread myT2 = new readerThread(dfs, 0);
         Thread t6 = new Thread(myT2);
         
-        readerThread myT3 = new readerThread(dfs, data4);
+        readerThread myT3 = new readerThread(dfs, 0);
         Thread t7 = new Thread(myT3);
         
-        readerThread myT4 = new readerThread(dfs, data4);
+        readerThread myT4 = new readerThread(dfs, 0);
         Thread t8 = new Thread(myT4);
         
-        t5.start();
-       /* t6.start();
+        
+      /*  t5.start();
+        t6.start();
         t7.start();
         t8.start();
         
@@ -128,8 +129,9 @@ public class testProgram {
        
         t6.join();
         t7.join();
-        t8.join();*/
-         t5.join();
+        t8.join();
+         t5.join();*/
+         
        
  
         System.out.println("\n List DFileIDs");
@@ -142,8 +144,8 @@ public class testProgram {
 
 
         dfs.sync();
-        disk.done();
-        diskThread.join();
+        //disk.done();
+        //diskThread.join();
         System.out.println("\n Test Successful");
         
 

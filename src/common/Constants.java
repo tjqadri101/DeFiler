@@ -28,5 +28,5 @@ public class Constants {
 	};
 
 	/* Virtual disk file/store name */
-	public static final String vdiskName = "DST.dat";
+	public static final String vdiskName = "DST2.dat";
 }

@@ -8,11 +8,12 @@ import dfs.DFS;
 public class readerThread implements Runnable {
     private DFS dfs;
     private byte[] data;
+    private int id;
     private DFileID file;
     
-    public readerThread(DFS dfs, byte[] data) {
+    public readerThread(DFS dfs, int id) {
         this.dfs = dfs;
-        this.data = data;
+        this.id = id;
     }
 
 
@@ -21,14 +22,14 @@ public class readerThread implements Runnable {
     public void run() {
     	System.out.println("\n new thread was created");
 
-        file = new DFileID(1);
+        file = new DFileID(this.id);
         
         System.out.println(printFile());
 
     }
 
     public String printFile() {
-        byte[] out = new byte[data.length];
+        byte[] out = new byte[1024];
         dfs.read(file, out, 0, out.length);
         return new String(out);
     }
