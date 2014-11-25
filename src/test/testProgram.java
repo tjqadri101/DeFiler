@@ -31,11 +31,15 @@ public class testProgram {
     	
     	
     	//initialize DFS
-        DFS dfs = new DFS(cache);
-        dfs.init();
+        
         Thread diskThread = new Thread(disk);
+        diskThread.start();
+        
+        DFS dfs = new DFS(true, cache);
+        dfs.init();
         
         
+        System.out.println("debug 1");
         //create files
         Path path1 = Paths.get("src/test/file1.txt");
         byte[] data1 = null;
@@ -91,7 +95,7 @@ public class testProgram {
         thread thread4 = new thread(dfs, data4);
         Thread t4 = new Thread(thread4);
         
-        diskThread.start();
+        
         t1.start();
         t2.start();
         t3.start();
@@ -101,24 +105,47 @@ public class testProgram {
         t2.join();
         t3.join();
         t4.join();
-        //disk.done();
-        //diskThread.join();
+
+        readerThread myT1 = new readerThread(dfs, data4);
+        Thread t5 = new Thread(myT1);
+      
+        readerThread myT2 = new readerThread(dfs, data4);
+        Thread t6 = new Thread(myT2);
+        
+        readerThread myT3 = new readerThread(dfs, data4);
+        Thread t7 = new Thread(myT3);
+        
+        readerThread myT4 = new readerThread(dfs, data4);
+        Thread t8 = new Thread(myT4);
+        
+        t5.start();
+       /* t6.start();
+        t7.start();
+        t8.start();
         
         
+        
+       
+        t6.join();
+        t7.join();
+        t8.join();*/
+         t5.join();
+       
+ 
         System.out.println("\n List DFileIDs");
         for (DFileID d : dfs.listAllDFiles()) {
             System.out.println(d);
         }
         
         System.out.println("\n List Inodes mapping");
-        for (Inode i : dfs.listAllInodes()) {
-            System.out.println(i.getBlockMap());
-        }
+        dfs.listAllInodes();
 
-
-        
-        System.out.println("\n Test Successful");
 
         dfs.sync();
+        disk.done();
+        diskThread.join();
+        System.out.println("\n Test Successful");
+        
+
     }
 }

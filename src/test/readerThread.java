@@ -5,12 +5,12 @@ import dfs.DFS;
 
 
 
-public class thread implements Runnable {
+public class readerThread implements Runnable {
     private DFS dfs;
     private byte[] data;
     private DFileID file;
     
-    public thread(DFS dfs, byte[] data) {
+    public readerThread(DFS dfs, byte[] data) {
         this.dfs = dfs;
         this.data = data;
     }
@@ -19,12 +19,11 @@ public class thread implements Runnable {
 
     @Override
     public void run() {
+    	System.out.println("\n new thread was created");
 
-        DFileID myFileID = dfs.createDFile();
-        file = myFileID;
-        dfs.write(myFileID, data, 0, data.length);
+        file = new DFileID(1);
         
-        System.out.println("\n PRINTING FILE ---");
+        System.out.println(printFile());
 
     }
 

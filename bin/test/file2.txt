@@ -1,61 +1,256 @@
-Contents  [hide] 
-1 Aspects of file systems
-1.1 Space management
-1.2 Filenames
-1.3 Directories
-1.4 Metadata
-1.5 File system as an abstract user interface
-1.6 Utilities
-1.7 Restricting and permitting access
-1.8 Maintaining integrity
-1.9 User data
-1.10 Using a file system
-1.11 Multiple file systems within a single system
-1.12 Design limitations
-2 Types of file systems
-2.1 Disk file systems
-2.1.1 Optical discs
-2.2 Flash file systems
-2.3 Tape file systems
-2.3.1 Tape formatting
-2.4 Database file systems
-2.5 Transactional file systems
-2.6 Network file systems
-2.7 Shared disk file systems
-2.8 Special file systems
-2.8.1 Device file systems
-2.8.2 Other special file systems
-2.9 Minimal file system / Audio-cassette storage
-2.10 Flat file systems
-3 File systems and operating systems
-3.1 Unix-like operating systems
-3.1.1 Linux
-3.1.2 Solaris
-3.1.3 OS X
-3.2 PC-BSD
-3.3 Plan 9
-3.4 Microsoft Windows
-3.4.1 FAT
-3.4.2 NTFS
-3.4.3 exFAT
-3.5 OpenVMS
-3.6 MVS [IBM Mainframe]
-3.7 Other file systems
-4 Limitations
-4.1 Converting the type of a file system
-4.1.1 In-place conversion
-4.1.2 Migrating to a different file system
-4.2 Long file paths and long file names
-5 See also
-6 References
-6.1 Cited references
-6.2 General references
-7 Further reading
-7.1 Books
-7.2 Online
-8 External links
-Aspects of file systems[edit]
-Space management[edit]
-Note: this only applies to file systems used in storage devices.
-
-
+file2 0
+file2 1
+file2 2
+file2 3
+file2 4
+file2 5
+file2 6
+file2 7
+file2 8
+file2 9
+file2 10
+file2 11
+file2 12
+file2 13
+file2 14
+file2 15
+file2 16
+file2 17
+file2 18
+file2 19
+file2 20
+file2 21
+file2 22
+file2 23
+file2 24
+file2 25
+file2 26
+file2 27
+file2 28
+file2 29
+file2 30
+file2 31
+file2 32
+file2 33
+file2 34
+file2 35
+file2 36
+file2 37
+file2 38
+file2 39
+file2 40
+file2 41
+file2 42
+file2 43
+file2 44
+file2 45
+file2 46
+file2 47
+file2 48
+file2 49
+file2 50
+file2 51
+file2 52
+file2 53
+file2 54
+file2 55
+file2 56
+file2 57
+file2 58
+file2 59
+file2 60
+file2 61
+file2 62
+file2 63
+file2 64
+file2 65
+file2 66
+file2 67
+file2 68
+file2 69
+file2 70
+file2 71
+file2 72
+file2 73
+file2 74
+file2 75
+file2 76
+file2 77
+file2 78
+file2 79
+file2 80
+file2 81
+file2 82
+file2 83
+file2 84
+file2 85
+file2 86
+file2 87
+file2 88
+file2 89
+file2 90
+file2 91
+file2 92
+file2 93
+file2 94
+file2 95
+file2 96
+file2 97
+file2 98
+file2 99
+file2 100
+file2 101
+file2 102
+file2 103
+file2 104
+file2 105
+file2 106
+file2 107
+file2 108
+file2 109
+file2 110
+file2 111
+file2 112
+file2 113
+file2 114
+file2 115
+file2 116
+file2 117
+file2 118
+file2 119
+file2 120
+file2 121
+file2 122
+file2 123
+file2 124
+file2 125
+file2 126
+file2 127
+file2 128
+file2 129
+file2 130
+file2 131
+file2 132
+file2 133
+file2 134
+file2 135
+file2 136
+file2 137
+file2 138
+file2 139
+file2 140
+file2 141
+file2 142
+file2 143
+file2 144
+file2 145
+file2 146
+file2 147
+file2 148
+file2 149
+file2 150
+file2 151
+file2 152
+file2 153
+file2 154
+file2 155
+file2 156
+file2 157
+file2 158
+file2 159
+file2 160
+file2 161
+file2 162
+file2 163
+file2 164
+file2 165
+file2 166
+file2 167
+file2 168
+file2 169
+file2 170
+file2 171
+file2 172
+file2 173
+file2 174
+file2 175
+file2 176
+file2 177
+file2 178
+file2 179
+file2 180
+file2 181
+file2 182
+file2 183
+file2 184
+file2 185
+file2 186
+file2 187
+file2 188
+file2 189
+file2 190
+file2 191
+file2 192
+file2 193
+file2 194
+file2 195
+file2 196
+file2 197
+file2 198
+file2 199
+file2 200
+file2 201
+file2 202
+file2 203
+file2 204
+file2 205
+file2 206
+file2 207
+file2 208
+file2 209
+file2 210
+file2 211
+file2 212
+file2 213
+file2 214
+file2 215
+file2 216
+file2 217
+file2 218
+file2 219
+file2 220
+file2 221
+file2 222
+file2 223
+file2 224
+file2 225
+file2 226
+file2 227
+file2 228
+file2 229
+file2 230
+file2 231
+file2 232
+file2 233
+file2 234
+file2 235
+file2 236
+file2 237
+file2 238
+file2 239
+file2 240
+file2 241
+file2 242
+file2 243
+file2 244
+file2 245
+file2 246
+file2 247
+file2 248
+file2 249
+file2 250
+file2 251
+file2 252
+file2 253
+file2 254
+file2 255

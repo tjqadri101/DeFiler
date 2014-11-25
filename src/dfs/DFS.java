@@ -50,7 +50,7 @@ public class DFS extends AbstractDFS{
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		System.out.println("\n now in init function");
+		
 		myInodes = new LinkedList<Inode>();
 		myDFileIDs = new LinkedList<DFileID>();
 		myBlockIDs = new LinkedList<Integer>();
@@ -68,8 +68,8 @@ public class DFS extends AbstractDFS{
 			Inode inode = new Inode(i); 
 			myInodes.add(inode);
 		}
-
-
+		
+		
 		int inodeSpace = Constants.MAX_DFILES * Constants.INODE_SIZE;
 		_totalInodeBlocks = inodeSpace/Constants.BLOCK_SIZE;
 		if(inodeSpace%Constants.BLOCK_SIZE != 0)
@@ -80,18 +80,23 @@ public class DFS extends AbstractDFS{
 			myBlockIDs.add(i);
 		}
 
-		//Check block 0 to see if VDF used for the first time or not
-		
+		/*//Check block 0 to see if VDF used for the first time or not
 		DBuffer buf = myDevilCache.getBlock(0);
+		
 		byte[] vdfStatusArr = new byte[Constants.INTEGER_SIZE];
-		buf.read(vdfStatusArr, Constants.HEADER_BLOCK_ID, Constants.INTEGER_SIZE);
+		
+		buf.read(vdfStatusArr, 0, Constants.INTEGER_SIZE);
+
+		
 		//VDF used for first time
 		if(Utils.bytesToInt(vdfStatusArr) == 0){
+			System.out.println("firsttime");
 			vdfStatusArr = Utils.intToBytes(1);
 			buf.write(vdfStatusArr, Constants.HEADER_BLOCK_ID, Constants.INTEGER_SIZE);
 		}
 		//update inodes from VDF
 		else{
+			System.out.println("secondtime");
 			int inodeCount = 0;
 			for(int i = 1; i <= _totalInodeBlocks; i++){
 				int seek = 0;
@@ -101,9 +106,13 @@ public class DFS extends AbstractDFS{
 				while(seek < Constants.BLOCK_SIZE){
 					Inode test = new Inode(-1);
 					byte[] inodeData = new byte[Constants.INODE_SIZE];
+<<<<<<< HEAD
+					buffer.read(inodeData, 0, Constants.INODE_SIZE);
+=======
 					for(int j = 0; j < Constants.INODE_SIZE; j++){
 						inodeData[j] = blockByte[j+seek];
 					}
+>>>>>>> 114f36ff39d8d8c646b4e4739d03221949d4a685
 					if(test.initFromDisk(inodeData)){
 						myInodes.remove(test);
 						inodes.add(test);
@@ -115,16 +124,22 @@ public class DFS extends AbstractDFS{
 					inodeCount++;
 				}
 			}
+<<<<<<< HEAD
+			System.out.println("debug"+ inodeCount);
+=======
+>>>>>>> 26fc23bd69cfd04b7fc0b188b6c37ca4257da62c
 			if(inodeCount > Constants.MAX_DFILES){
 				System.out.println("Error. More inodes than possible read from VDF in initiallization");
 				System.exit(1);
 			}
 		}
-
+		
+		System.out.println("debug");
+		*/
 	}
 
 	//helper functions 
-	public Inode getMyInode(DFileID dfid){
+	public synchronized Inode getMyInode(DFileID dfid){
 		for(Inode i: inodes){
 			if(i.getDFID()==dfid.getDFileID()){
 				return i;
@@ -132,17 +147,22 @@ public class DFS extends AbstractDFS{
 		}
 		return null;
 	}
-	
-	public ArrayList<Inode> listAllInodes(){
-		return inodes;
+	public static void writeInodeToDisk(){
+
 	}
+	public void listAllInodes(){
+		for(Inode i: inodes){
+			System.out.println(i.getBlockMap());
+		}
+	}
+	
 
 
 	@Override
 	public synchronized DFileID createDFile() {
 		// TODO Auto-generated method stub
 
-		System.out.println("\n now in createFile function");
+		//System.out.println("\n now in createFile function");
 
 		DFileID dfid = myDFileIDs.poll();
 		int blockid = myBlockIDs.poll();
@@ -151,6 +171,7 @@ public class DFS extends AbstractDFS{
 		DBuffer dbuf = myDevilCache.getBlock(blockid);
 		System.out.println("we have bid "+ blockid);
 		myDevilCache.releaseBlock(dbuf);
+
 		//inode.updateBlockMap(blockid, Constants.BLOCK_SIZE);
 		inode.updateDFID(dfid.getDFileID(), blockid);
 		writeInode(inode);
@@ -184,7 +205,7 @@ public class DFS extends AbstractDFS{
 	public int read(DFileID dFID, byte[] buffer, int startOffset, int count) {
 		// TODO Auto-generated method stub
 
-		System.out.println("\n Now in read function");
+		//System.out.println("\n Now in read function");
 
 		if (!dfiles.contains(dFID)){
 			System.out.println("\n Requested file not found");
@@ -222,7 +243,7 @@ public class DFS extends AbstractDFS{
 	@Override
 	public int write(DFileID dFID, byte[] buffer, int startOffset, int count) {
 		// TODO Auto-generated method stub
-		System.out.println("\n Now in write function");
+		//System.out.println("\n Now in write function");
 
 		if (count > Constants.MAX_FILE_BLOCKS*Constants.BLOCK_SIZE){
 			System.out.println("\n Write exceeds maximum file size");
@@ -243,10 +264,8 @@ public class DFS extends AbstractDFS{
 		for (int j=0; j<=count/Constants.BLOCK_SIZE; j++){
 			//System.out.println(count/Constants.BLOCK_SIZE);
 			int bId = i.getBlockID(j);
+		
 			
-			if (bId ==-1){
-				System.out.println("\n Block not found in block map here");
-			}
 			DBuffer dbuf = myDevilCache.getBlock(bId);
 
 
@@ -262,14 +281,14 @@ public class DFS extends AbstractDFS{
 			//System.out.println(dbuf.getBlockID());
 
 			if (dbuf==null){
-				System.out.println("\n Block not found in block map");
+				//System.out.println("\n Block not found in block map");
 				int newBlock = myBlockIDs.poll();
 				if(!i.updateBlockMap(newBlock, cap)){
 					System.out.println("\n File exceeds block bounds");
 				}
 				
 				dbuf = myDevilCache.getBlock(newBlock);
-				System.out.println("BlockId write "+newBlock );
+				//System.out.println("BlockId write "+newBlock );
 			}
 
 			if(dbuf.write(buffer, startOffset+Constants.BLOCK_SIZE*j, cap)==-1){
@@ -300,7 +319,7 @@ public class DFS extends AbstractDFS{
 	@Override
 	public void sync() {
 		// TODO Auto-generated method stub
-
+		myDevilCache.sync();
 	}
 	
 	//Write inode to DBufferCache when an appropriate update is used

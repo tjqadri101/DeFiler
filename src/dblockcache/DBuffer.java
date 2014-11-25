@@ -109,7 +109,13 @@ public class DBuffer extends AbstractDBuffer{
 	public synchronized int read(byte[] buffer, int startOffset, int count) {
 		// TODO Auto-generated method stub
 		//some errors
-		System.out.println(valid);
+		if (count>Constants.BLOCK_SIZE){
+			System.out.println("error 1");
+		}
+		if (startOffset+count>buffer.length){
+			System.out.println("error 2");
+		}
+		//System.out.println(valid);
 		waitValid();
 		for(int i=0;i<count;i++){
 			buffer[startOffset+i] = dbuf[i];
@@ -136,7 +142,7 @@ public class DBuffer extends AbstractDBuffer{
 	@Override
 	public synchronized void ioComplete() {
 		// TODO Auto-generated method stub
-		System.out.println("IO completed");
+		//System.out.println("IO completed");
 		pinned=false;
 		valid=true;
 		dirty=false;
@@ -146,6 +152,7 @@ public class DBuffer extends AbstractDBuffer{
 	@Override
 	public int getBlockID() {
 		// TODO Auto-generated method stub
+
 		return blockId;
 	}
 	/* An upcall from VirtualDisk layer to fetch the buffer associated with DBuffer object*/

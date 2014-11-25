@@ -26,7 +26,7 @@ public class DBufferCache extends AbstractDBufferCache{
 	 * cannot change.
 	 */
 	@Override
-	public DBuffer getBlock(int blockID) {
+	public synchronized DBuffer getBlock(int blockID) {
 		// TODO Auto-generated method stub
 		int length=0;
 		if (blockID<0) return null;
@@ -37,6 +37,7 @@ public class DBufferCache extends AbstractDBufferCache{
 		if(cacheBlocks.size()==maxBlocksInCache){
 			evict();
 		}*/
+		if (!buffersInCache.isEmpty()){
 		
 		for(DBuffer b: buffersInCache){
 			length++;
@@ -49,6 +50,7 @@ public class DBufferCache extends AbstractDBufferCache{
 				b.setHeld(true);
 				return b;
 			}
+		}
 		}
 		if (length==maxBlocksInCache) evict();
 		DBuffer newBuffer = new DBuffer(blockID,myDisk);
