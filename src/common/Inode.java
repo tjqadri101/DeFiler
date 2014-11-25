@@ -13,11 +13,11 @@ public class Inode {
 	private int _iter;
 	private int _mappedBool;
 	private int _fileSize;
-	
+
 	public Inode(int inodeID) {
 		_inodeID = inodeID;
 		init();
-		
+
 	}
 	private void init(){
 		_blockMap = new int[Constants.MAX_FILE_BLOCKS];
@@ -36,18 +36,18 @@ public class Inode {
 		}
 		return false;
 	}
-	
+
 	public int[] getBlockMap(){
 		return _blockMap;
 	}
-	
+
 	public synchronized boolean utitlizeInode(){
 		if(_mappedBool == 0){
 			_mappedBool = 1;
 			return true;
 		}
 		return false;
-		
+
 	}
 	public synchronized void updateDFID(int dfid, int blockID){
 		_dFID = dfid;
@@ -56,27 +56,27 @@ public class Inode {
 	public int getDFID(){
 		return _dFID;
 	}
-	
+
 	public DFileID getDFileID(){
 		return new DFileID(_dFID);
 	}
-	
+
 	public int getBlockID(int index){
 		int bID = _blockMap[index];
 		if(bID == 0)
 			return -1;
 		return bID;
 	}
-	
+
 	public int getID(){
 		return _inodeID;
 	}
-	
+
 	public synchronized void updateFileSize(int byteCount){
 		if(_fileSize < byteCount)
 			_fileSize = byteCount;	
 	}
-	
+
 	public int getFileSize(){
 		return _fileSize;
 	}
@@ -94,7 +94,7 @@ public class Inode {
 		}
 		return Utils.intsToBytes(intInodeData);
 	}
-	
+
 	//call this method to recreate an inode from disk data
 	public boolean initFromDisk(byte[] inodeData){
 		int[] intInodeData = Utils.bytesToInts(inodeData);
@@ -108,7 +108,7 @@ public class Inode {
 		}
 		return _mappedBool == 1;
 	}
-	
+
 	public boolean equals(Object other){
 		Inode otherInode =  (Inode) other;
 		if(otherInode.getID() == _inodeID){
@@ -119,21 +119,23 @@ public class Inode {
 	public void removeBIDsFromList(Queue<Integer> myBlockIDs) {
 		// TODO Auto-generated method stub
 		for(int i = 0; i < _blockMap.length; i++){
+
 			if(_blockMap[i] == 0)
 				break;
 			myBlockIDs.remove(_blockMap[i]);
 		}
-		
+
+
 	}
-	
+
 	/*
 	public static void main(String args[]){
-		
+
 		Queue<Inode> test = new LinkedList<Inode>();
 		test.add(new Inode(2));
 		Inode b = new Inode(2);
 		System.out.println(test.remove(b));
 		System.out.println(test.size());
-		
+
 	}*/
 }

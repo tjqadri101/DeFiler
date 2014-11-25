@@ -111,10 +111,10 @@ public class DFS extends AbstractDFS{
 					inodeCount++;
 				}
 			}
-			if(inodeCount > Constants.MAX_DFILES)
+			if(inodeCount > Constants.MAX_DFILES){
 				System.out.println("Error. More inodes than possible read from VDF in initiallization");
 				System.exit(1);
-			
+			}
 		}
 
 	}
