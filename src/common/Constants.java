@@ -12,17 +12,16 @@ public class Constants {
 	 * time constants and can be changed during evaluation.  Your implementation
 	 * should be free of any hard-coded constants.  
 	 */
-
+	public static final	int	INTEGER_SIZE = 4; //Number of bytes in an int
 	public static final int NUM_OF_BLOCKS = 262144; // 2^18
 	public static final int BLOCK_SIZE = 1024; // 1kB
 	public static final int MAX_FILE_BLOCKS = 500;
 	public static final int BLOCK_MAP_SIZE = MAX_FILE_BLOCKS*4;
-	public static final int INODE_SIZE =  BLOCK_MAP_SIZE + 16; //32 Bytes
+	public static final int INODE_SIZE =  BLOCK_MAP_SIZE + 5*INTEGER_SIZE; //32 Bytes
 	public static final int NUM_OF_CACHE_BLOCKS = 65536; // 2^16
 	public static final int MAX_FILE_SIZE = BLOCK_SIZE*MAX_FILE_BLOCKS; // Constraint on the max file size
-
 	public static final int MAX_DFILES = 512; // For recylcing DFileIDs
-
+	public static final int HEADER_BLOCK_ID = 0; //id for block 0 of VDF
 	/* DStore Operation types */
 	public enum DiskOperationType {
 		READ, WRITE

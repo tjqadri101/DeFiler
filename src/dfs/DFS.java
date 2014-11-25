@@ -66,7 +66,7 @@ public class DFS extends AbstractDFS{
 
 		//initiate Inodes
 		for (int i=0;i<Constants.MAX_DFILES;i++){
-			Inode inode = new Inode();
+			Inode inode = new Inode(i);
 			myInodes.add(inode);
 		}
 
@@ -77,12 +77,46 @@ public class DFS extends AbstractDFS{
 			totalInodeBlocks++;
 
 		//initiate BlockIDS
-		for (int i=totalInodeBlocks;i<Constants.NUM_OF_BLOCKS;i++){
+		for (int i=totalInodeBlocks + 1;i<Constants.NUM_OF_BLOCKS;i++){
 			myBlockIDs.add(i);
 		}
 
-
-
+		//Check block 0 to see if VDF used for the first time or not
+		
+		DBuffer buf = myDevilCache.getBlock(0);
+		byte[] vdfStatusArr = new byte[Constants.INTEGER_SIZE];
+		buf.read(vdfStatusArr, Constants.HEADER_BLOCK_ID, Constants.INTEGER_SIZE);
+		//VDF used for first time
+		if(Utils.bytesToInt(vdfStatusArr) == 0){
+			vdfStatusArr = Utils.intToBytes(1);
+			buf.write(vdfStatusArr, Constants.HEADER_BLOCK_ID, Constants.INTEGER_SIZE);
+		}
+		//update inodes from VDF
+		else{
+			int inodeCount = 0;
+			for(int i = 1; i <= totalInodeBlocks; i++){
+				int seek = 0;
+				DBuffer buffer = myDevilCache.getBlock(i);
+				while(seek < Constants.BLOCK_SIZE){
+					Inode test = new Inode(-1);
+					byte[] inodeData = new byte[Constants.INODE_SIZE];
+					buffer.read(inodeData, seek, Constants.INODE_SIZE);
+					if(test.initFromDisk(inodeData)){
+						myInodes.remove(test);
+						inodes.add(test);
+						myDFileIDs.remove(test.getDFileID());
+						dfiles.add(test.getDFileID());
+						test.removeBIDsFromList(myBlockIDs);
+					};
+					seek += Constants.INODE_SIZE;
+					inodeCount++;
+				}
+			}
+			if(inodeCount > Constants.MAX_DFILES)
+				System.out.println("Error. More inodes than possible read from VDF in initiallization");
+				System.exit(1);
+			
+		}
 
 	}
 
@@ -95,9 +129,7 @@ public class DFS extends AbstractDFS{
 		}
 		return null;
 	}
-	public static void writeInodeToDisk(){
-
-	}
+	
 	public ArrayList<Inode> listAllInodes(){
 		return inodes;
 	}
