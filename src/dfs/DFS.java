@@ -114,8 +114,12 @@ public class DFS extends AbstractDFS{
 		Inode inode = myInodes.poll();
 
 		DBuffer dbuf = myDevilCache.getBlock(blockid);
+		System.out.println("we have bid "+ blockid);
 		myDevilCache.releaseBlock(dbuf);
-		inode.updateBlockMap(blockid, Constants.BLOCK_SIZE);
+		//inode.updateBlockMap(blockid, Constants.BLOCK_SIZE);
+		for(int pula=0;pula<3;pula++){
+			System.out.print(inode.getBlockMap()[pula]+" ");
+		}
 		inode.updateDFID(dfid.getDFileID(), blockid);
 		dfiles.add(dfid);
 		inodes.add(inode);
@@ -139,6 +143,7 @@ public class DFS extends AbstractDFS{
 
 		inodes.remove(i);
 		dfiles.remove(dFID);
+
 	}
 
 	@Override
@@ -192,22 +197,27 @@ public class DFS extends AbstractDFS{
 
 		if (!dfiles.contains(dFID)){
 			System.out.println("\n Requested file not found");
-			return -1;
+			return 0;
 		}
 
 		Inode i = getMyInode(dFID);
 		if(i==null){
 			System.out.println("\n Inode not found for requested ");
-			return -1;
+			return 0;
 		}
 
-
 		for (int j=0; j<=count/Constants.BLOCK_SIZE; j++){
+			//System.out.println(count/Constants.BLOCK_SIZE);
 			int bId = i.getBlockID(j);
+			for(int pula=0;pula<3;pula++){
+				System.out.print(i.getBlockMap()[pula]+" ");
+			}
 			if (bId ==-1){
-				System.out.println("\n Block not found in block map");
+				System.out.println("\n Block not found in block map here");
 			}
 			DBuffer dbuf = myDevilCache.getBlock(bId);
+
+
 
 			int cap;
 			if(j==count/Constants.BLOCK_SIZE){
@@ -217,19 +227,22 @@ public class DFS extends AbstractDFS{
 				cap = Constants.BLOCK_SIZE;
 			}
 
+			//System.out.println(dbuf.getBlockID());
+
 			if (dbuf==null){
+				System.out.println("\n Block not found in block map");
 				int newBlock = myBlockIDs.poll();
 				if(!i.updateBlockMap(newBlock, cap)){
 					System.out.println("\n File exceeds block bounds");
 				}
 				dbuf = myDevilCache.getBlock(newBlock);
+				System.out.println("BlockId write "+newBlock );
 			}
 
 			if(dbuf.write(buffer, startOffset+Constants.BLOCK_SIZE*j, cap)==-1){
 				myDevilCache.releaseBlock(dbuf);
 				return -1;
 			}
-
 		}
 		i.updateFileSize(count);
 		return 0;
